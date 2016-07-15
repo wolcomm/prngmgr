@@ -1,0 +1,11 @@
+# local_settings.py example file
+# uncomment and edit the settings below
+
+#MY_ASN = 0
+
+#SNMP = {
+#    'port': 161,
+#    'user': 'v3Username',
+#    'authPass': 'authPass',
+#    'privKey': 'privKey',
+#}
