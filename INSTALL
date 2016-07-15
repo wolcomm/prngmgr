@@ -26,14 +26,14 @@ COUNTRIES_OVERRIDE = {
    'XK': 'Kosovo',
 }
 PEERINGDB_ABSTRACT_ONLY = False
-PEERINGDB_SYNC_STRIP_TZ = True
+#PEERINGDB_SYNC_STRIP_TZ = True
 
 # add "include" url path to projects root urls.py
 vi ../myprngmgr/urls.py
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^/', include('prngmgr.urls')),
+    url(r'^', include('prngmgr.urls')),
 ]
 
 # copy local_settings.py.example to local_settings.py and edit values
@@ -58,4 +58,4 @@ python manage.py prngmgr-sync
 # start development webserver
 python manage.py runserver 0.0.0.0:8080
 
-# go to http://localhost:8080 and have a look around
+# go to http://localhost:8080/ and have a look around
