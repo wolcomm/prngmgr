@@ -8,6 +8,7 @@ git clone https://github.com/benmaddison/prngmgr.git
 # install django_peeringdb from pip
 
 # add django_peeringdb and prngmgr to installed apps
+#   and add PDB config to end of file
 vi ../myprngmgr/settings.py
 
 INSTALLED_APPS = (
@@ -20,6 +21,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 )
+
+COUNTRIES_OVERRIDE = {
+   'XK': 'Kosovo',
+}
+PEERINGDB_ABSTRACT_ONLY = False
+PEERINGDB_SYNC_STRIP_TZ = True
 
 # add "include" url path to projects root urls.py
 vi ../myprngmgr/urls.py
