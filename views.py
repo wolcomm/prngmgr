@@ -1,6 +1,6 @@
 from collections import Counter
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.template import loader
 from django.db.models import Count
 from django.core.urlresolvers import reverse
@@ -169,10 +169,13 @@ def routers(request, rtr_id):
     if request.method == 'GET':
         if rtr_id:
             template = loader.get_template('prngmgr/form.html')
-            if rtr_id == 0:
+            if rtr_id == 'new':
                 form = PeeringRouterForm
             else:
-                router = PeeringRouter.objects.get(id=rtr_id)
+                try:
+                    router = PeeringRouter.objects.get(id=rtr_id)
+                except:
+                    return HttpResponseNotFound
                 form = PeeringRouterForm(instance=router)
             context['form'] = form
         else:
