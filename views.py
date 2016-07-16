@@ -11,6 +11,7 @@ from ipaddress import *
 
 from prngmgr.settings import *
 from prngmgr.models import *
+from prngmgr.forms import *
 from prngmgr.snmp import Get, GetBGPTable
 
 me = Network.objects.get(asn=MY_ASN)
@@ -159,58 +160,67 @@ def networks(request, net_id):
     return HttpResponse(template.render(context, request))
 
 def routers(request, rtr_id):
-    template = loader.get_template('prngmgr/table.html')
-    context = {
-        'view': 'routers',
-        'table': {
-            'name': 'routers',
-            'title': 'Peering Routers',
-            'cols': [
-                { 'title': 'Hostname' },
-                { 'title': 'Peering Interfaces' },
-                { 'title': 'Possible Sessions' },
-                { 'title': 'Provisioned Sessions' },
-                { 'title': 'Established Sessions' },
-            ],
-            'rows': [
-            ],
-        },
-        'filter': {
-        },
-    }
-    routers = PeeringRouter.objects.all()
-    for router in routers:
-        interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
-        sessions = PeeringSession.objects.filter(prngrtriface__prngrtr=router)
-        calculated = _render_alerts({
-            'count': {
-                'interfaces': interfaces.count(),
-                'possible': sessions.count(),
-                'provisioned': sessions.filter(provisioning_state=PeeringSession.PROV_COMPLETE).count(),
-                'established': sessions.filter(operational_state=PeeringSession.OPER_ESTABLISHED).count(),
+    context = {'view': 'routers'}
+    if request.method == 'GET':
+        if rtr_id:
+            template = loader.get_template('prngrtr/form.html')
+            if rtr_id == 0:
+                form = PeeringRouterForm
+            else:
+                router = PeeringRouter.objects.get(id=rtr_id)
+                form = PeeringRouterForm(instance=router)
+        context['form'] = form
+        else:
+            template = loader.get_template('prngmgr/table.html')
+            table = {
+                'name': 'routers',
+                'title': 'Peering Routers',
+                'cols': [
+                    { 'title': 'Hostname' },
+                    { 'title': 'Peering Interfaces' },
+                    { 'title': 'Possible Sessions' },
+                    { 'title': 'Provisioned Sessions' },
+                    { 'title': 'Established Sessions' },
+                ],
+                'rows': [
+                ],
+                'filter': {
+                },
             },
-        })
-        row = { 'fields': [] }
-        row['fields'].append({
-            'display': router.hostname,
-        })
-        row['fields'].append({
-            'display': calculated['count']['interfaces'],
-        })
-        row['fields'].append({
-            'display': calculated['count']['possible'],
-            'alert': calculated['alert']['possible'],
-        })
-        row['fields'].append({
-            'display': calculated['count']['provisioned'],
-            'alert': calculated['alert']['provisioned'],
-        })
-        row['fields'].append({
-            'display': calculated['count']['established'],
-            'alert': calculated['alert']['established'],
-        })
-        context['table']['rows'].append(row)
-    return HttpResponse(template.render(context, request))
+            routers = PeeringRouter.objects.all()
+            for router in routers:
+                interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
+                sessions = PeeringSession.objects.filter(prngrtriface__prngrtr=router)
+                calculated = _render_alerts({
+                    'count': {
+                        'interfaces': interfaces.count(),
+                        'possible': sessions.count(),
+                        'provisioned': sessions.filter(provisioning_state=PeeringSession.PROV_COMPLETE).count(),
+                        'established': sessions.filter(operational_state=PeeringSession.OPER_ESTABLISHED).count(),
+                    },
+                })
+                row = { 'fields': [] }
+                row['fields'].append({
+                    'display': router.hostname,
+                })
+                row['fields'].append({
+                    'display': calculated['count']['interfaces'],
+                })
+                row['fields'].append({
+                    'display': calculated['count']['possible'],
+                    'alert': calculated['alert']['possible'],
+                })
+                row['fields'].append({
+                    'display': calculated['count']['provisioned'],
+                    'alert': calculated['alert']['provisioned'],
+                })
+                row['fields'].append({
+                    'display': calculated['count']['established'],
+                    'alert': calculated['alert']['established'],
+                })
+                table['rows'].append(row)
+                context['table'] = table
+        return HttpResponse(template.render(context, request))
 
 def ixps(request, ixp_id):
     template = loader.get_template('prngmgr/table.html')

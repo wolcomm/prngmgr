@@ -17,13 +17,13 @@
   <div class="panel-heading">
     <h1 class="panel-title text-center">{{ table.title }}</h1>
   </div>
-  {% if filter %}
+  {% if table.filter %}
   <div class="panel-body">
     <div class="alert alert-info alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <strong>Output Filtered:</strong> {{ filter.field }} == {{ filter.arg }}.
+      <strong>Output Filtered:</strong> {{ table.filter.field }} == {{ table.filter.arg }}.
       <a href="{% url url_name %}">Clear filter</a>
     </div>
   </div>
