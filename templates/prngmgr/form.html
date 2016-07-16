@@ -9,7 +9,7 @@
   </div>
   <div class="panel-body">
   {% if form %}
-      <form action="{% view.url %}" method="post">
+      <form action="{{ view.url }}" method="post">
       {% csrf_token %}
       {{ form }}
       <button type="submit" class="btn btn-primary">
