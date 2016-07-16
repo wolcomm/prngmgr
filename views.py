@@ -186,7 +186,7 @@ def routers(request, rtr_id):
                 ],
                 'filter': {
                 },
-            },
+            }
             routers = PeeringRouter.objects.all()
             for router in routers:
                 interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
