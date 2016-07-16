@@ -220,7 +220,8 @@ def routers(request, rtr_id):
                 })
                 table['rows'].append(row)
             context['table'] = table
-        return HttpResponse(template.render(context, request))
+        return
+#         return HttpResponse(template.render(context, request))
 
 def ixps(request, ixp_id):
     template = loader.get_template('prngmgr/table.html')
