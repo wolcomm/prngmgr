@@ -219,7 +219,7 @@ def routers(request, rtr_id):
                     'alert': calculated['alert']['established'],
                 })
                 table['rows'].append(row)
-                context['table'] = table
+            context['table'] = table
         return HttpResponse(template.render(context, request))
 
 def ixps(request, ixp_id):
