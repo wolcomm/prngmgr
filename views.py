@@ -160,7 +160,12 @@ def networks(request, net_id):
     return HttpResponse(template.render(context, request))
 
 def routers(request, rtr_id):
-    context = {'view': 'routers'}
+    context = {
+        'view': {
+            'name': 'routers',
+            'url': reverse('prngmgr-routers'),
+        }
+    }
     if request.method == 'GET':
         if rtr_id:
             template = loader.get_template('prngrtr/form.html')
