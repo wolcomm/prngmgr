@@ -169,7 +169,7 @@ def routers(request, rtr_id):
             else:
                 router = PeeringRouter.objects.get(id=rtr_id)
                 form = PeeringRouterForm(instance=router)
-        context['form'] = form
+            context['form'] = form
         else:
             template = loader.get_template('prngmgr/table.html')
             table = {
