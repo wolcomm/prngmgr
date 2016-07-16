@@ -168,7 +168,7 @@ def routers(request, rtr_id):
     }
     if request.method == 'GET':
         if rtr_id:
-            template = loader.get_template('prngrtr/form.html')
+            template = loader.get_template('prngmgr/form.html')
             if rtr_id == 0:
                 form = PeeringRouterForm
             else:
