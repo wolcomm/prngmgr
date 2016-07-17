@@ -171,6 +171,7 @@ def routers(request, rtr_id):
             template = loader.get_template('prngmgr/form.html')
             if rtr_id == 0:
                 form = PeeringRouterForm()
+                return HttpResponse(form)
             else:
                 try:
                     router = PeeringRouter.objects.get(id=rtr_id)
