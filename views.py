@@ -184,7 +184,6 @@ def routers(request, rtr_id):
                 'info': {
                     'title': 'Peering Router',
                     'key': key,
-                    'model': form.model()
                 },
             }
         else:
