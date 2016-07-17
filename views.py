@@ -9,6 +9,7 @@ from django.http import (
 from django.template import loader
 from django.db.models import Count
 from django.core.urlresolvers import reverse
+from django.forms import inlineformset_factory
 
 from django_peeringdb.models.concrete import *
 
@@ -182,11 +183,8 @@ def routers(request, rtr_id):
                 except:
                     return HttpResponseNotFound(rtr_id)
                 form = PeeringRouterForm(request.POST, instance=router)
-            if form.is_valid():
-                router = form.save()
-                return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
-            else:
-                return HttpResponseNotFound('is_valid was false!')
+            router = form.save()
+            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
         else:
             return HttpResponseRedirect(reverse('prngmgr-routers'))
     elif request.method == 'GET':
@@ -202,9 +200,11 @@ def routers(request, rtr_id):
                     return HttpResponseNotFound(rtr_id)
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
+                InterfaceFormSet = inlineformset_factory(PeeringRouter, PeeringRouterIXInterface, fields=('netixlan',))
+                formset = InterfaceFormSet(instance=router)
             context['form'] = {
                 'parent': form,
-                'children': [],
+                'children': [formset],
                 'info': {
                     'title': 'Peering Router',
                     'key': key,

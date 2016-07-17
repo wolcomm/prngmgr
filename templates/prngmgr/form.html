@@ -16,6 +16,13 @@
           Submit
       </button>
       </form>
+      {% if form.children %}
+          {% for formset in form.children %}
+          <form action="" method="post">
+          {{ formset }}
+          </form>
+          {% endfor %}
+      {% endif %}
   {% else %}
     <p>No form found</p>
   {% endif %}
