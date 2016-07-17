@@ -5,13 +5,13 @@
 {% block content %}
 <div class="panel panel-primary">
   <div class="panel-heading">
-    <h1 class="panel-title text-center">form.title here</h1>
+    <h1 class="panel-title text-center">{{ form.info.title }}: {{ form.info.key }}</h1>
   </div>
   <div class="panel-body">
   {% if form.form %}
       <form action="{{ view.url }}" method="post">
       {% csrf_token %}
-      {{ form }}
+      {{ form.form }}
       <button type="submit" class="btn btn-primary">
           Submit
       </button>
