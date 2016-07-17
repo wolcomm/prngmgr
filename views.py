@@ -200,7 +200,11 @@ def routers(request, rtr_id):
                     return HttpResponseNotFound(rtr_id)
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
-                InterfaceFormSet = inlineformset_factory(PeeringRouter, PeeringRouterIXInterface, fields=('netixlan',))
+                InterfaceFormSet = inlineformset_factory(
+                    PeeringRouter, PeeringRouterIXInterface,
+                    fields=('netixlan',),
+                    extra=1
+                )
                 formset = InterfaceFormSet(instance=router)
             context['form'] = {
                 'parent': form,
