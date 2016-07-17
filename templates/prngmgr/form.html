@@ -14,7 +14,7 @@
       <ul class="list-group">
           {% for field in form.parent %}
           <li class="list-group-item">
-              {{ field.label_tag }}: {{ field }}
+              {{ field.label_tag }} {{ field }}
           </li>
           {% endfor %}
           <li class="list-group-item">
@@ -22,15 +22,16 @@
           </li>
       </ul>
       </form>
-<!--
       {% if form.children %}
           {% for formset in form.children %}
-          <form action="" method="post">
-              {{ formset }}
-          </form>
+              <div class="panel panel-default">
+                  <div class="panel-heading">Formset Title</div>
+                  <table class="table">
+                      {{ formset.as_table }}
+                  </table>
+              </div>
           {% endfor %}
       {% endif %}
-      -->
   {% else %}
     <p>No form found</p>
   {% endif %}
