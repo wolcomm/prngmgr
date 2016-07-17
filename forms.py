@@ -1,4 +1,7 @@
-from django.forms import ModelForm
+from django.forms import (
+    ModelForm,
+    BaseInlineFormSet,
+)
 from prngmgr.models import *
 
 class PeeringRouterForm(ModelForm):
@@ -6,3 +9,5 @@ class PeeringRouterForm(ModelForm):
         model = PeeringRouter
         fields = ['hostname']
 
+class PeeringRouterIXLanInterfaceFormSet(BaseInlineFormSet):
+    pass

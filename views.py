@@ -1,6 +1,10 @@
 from collections import Counter
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import (
+    HttpResponse,
+    HttpResponseNotFound,
+    HttpResponseNotAllowed,
+)
 from django.template import loader
 from django.db.models import Count
 from django.core.urlresolvers import reverse
@@ -180,7 +184,8 @@ def routers(request, rtr_id):
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
             context['form'] = {
-                'html': form,
+                'parent': form,
+                'children': [],
                 'info': {
                     'title': 'Peering Router',
                     'key': key,
@@ -237,6 +242,8 @@ def routers(request, rtr_id):
                 table['rows'].append(row)
             context['table'] = table
         return HttpResponse(template.render(context, request))
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
 
 def ixps(request, ixp_id):
     template = loader.get_template('prngmgr/table.html')
