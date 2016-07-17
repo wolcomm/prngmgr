@@ -2,6 +2,7 @@ from collections import Counter
 from django.shortcuts import render
 from django.http import (
     HttpResponse,
+    HttpResponseRedirect,
     HttpResponseNotFound,
     HttpResponseNotAllowed,
 )
@@ -170,7 +171,12 @@ def routers(request, rtr_id):
             'url': reverse('prngmgr-routers'),
         }
     }
-    if request.method == 'GET':
+    if request.method == 'POST':
+        template = loader.get_template('prngmgr/form.html')
+        form = PeeringRouterForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': rtr_id }))
+    elif request.method == 'GET':
         if rtr_id:
             template = loader.get_template('prngmgr/form.html')
             if int(rtr_id) == 0:
