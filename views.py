@@ -180,7 +180,7 @@ def routers(request, rtr_id):
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
             context['form'] = {
-                'form': form,
+                'html': form,
                 'info': {
                     'title': 'Peering Router',
                     'key': key,

@@ -8,10 +8,10 @@
     <h1 class="panel-title text-center">{{ form.info.title }}: {{ form.info.key }}</h1>
   </div>
   <div class="panel-body">
-  {% if form.form %}
+  {% if form.html %}
       <form action="{{ view.url }}" method="post">
       {% csrf_token %}
-      {{ form.form }}
+      {{ form.html }}
       <button type="submit" class="btn btn-primary">
           Submit
       </button>
