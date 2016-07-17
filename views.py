@@ -175,7 +175,8 @@ def routers(request, rtr_id):
         template = loader.get_template('prngmgr/form.html')
         form = PeeringRouterForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': rtr_id }))
+            router = form.save()
+            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
     elif request.method == 'GET':
         if rtr_id:
             template = loader.get_template('prngmgr/form.html')
