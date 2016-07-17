@@ -11,11 +11,18 @@
   {% if form.parent %}
       <form action="{{ form.info.post }}" method="post">
       {% csrf_token %}
-      {{ form.parent }}
-      <button type="submit" class="btn btn-primary">
-          Submit
-      </button>
+      <ul class="list-group">
+          {% for field in form.parent %}
+          <li class="list-group-item">
+              {{ field.label_tag }}: {{ field }}
+          </li>
+          {% endfor %}
+          <li class="list-group-item">
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </li>
+      </ul>
       </form>
+<!--
       {% if form.children %}
           {% for formset in form.children %}
           <form action="" method="post">
@@ -23,6 +30,7 @@
           </form>
           {% endfor %}
       {% endif %}
+      -->
   {% else %}
     <p>No form found</p>
   {% endif %}
