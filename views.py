@@ -168,7 +168,7 @@ def routers(request, rtr_id):
     context = {
         'view': {
             'name': 'routers',
-            'url': reverse('prngmgr-routers'),
+            'url': reverse('prngmgr-routers', kwargs = {}),
         }
     }
     if request.method == 'POST':
