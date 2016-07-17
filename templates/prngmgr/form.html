@@ -24,12 +24,30 @@
       </form>
       {% if form.children %}
           {% for formset in form.children %}
+          <form action="" method="post">
               <div class="panel panel-default">
                   <div class="panel-heading">Formset Title</div>
-                  <table class="table">
-                      {{ formset.as_table }}
+                  <table class="table table-condensed">
+                      {{ formset.management_form }}
+                      <thead>
+                      <tr>
+                          {% for field in formset.forms.0 %}
+                          <th>{{ field.label }}</th>
+                          {% endfor %}
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for form in formset %}
+                          <tr>
+                          {% for field in form %}
+                              <td>{{ field }}</td>
+                          {% endfor %}
+                          </tr>
+                      {% endfor %}
+                      </tbody>
                   </table>
               </div>
+          </form>
           {% endfor %}
       {% endif %}
   {% else %}
