@@ -230,6 +230,7 @@ def routers(request, rtr_id):
                 row = { 'fields': [] }
                 row['fields'].append({
                     'display': router.hostname,
+                    'link': reverse('prngmgr-routers', kwargs={'rtr_id': router.id}),
                 })
                 row['fields'].append({
                     'display': calculated['count']['interfaces'],
