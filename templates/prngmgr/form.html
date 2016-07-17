@@ -8,7 +8,7 @@
     <h1 class="panel-title text-center">form.title here</h1>
   </div>
   <div class="panel-body">
-  {% if form %}
+  {% if form.form %}
       <form action="{{ view.url }}" method="post">
       {% csrf_token %}
       {{ form }}
