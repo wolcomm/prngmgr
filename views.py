@@ -170,14 +170,23 @@ def routers(request, rtr_id):
         if rtr_id:
             template = loader.get_template('prngmgr/form.html')
             if int(rtr_id) == 0:
+                key = 'New'
                 form = PeeringRouterForm()
             else:
                 try:
                     router = PeeringRouter.objects.get(id=rtr_id)
                 except:
                     return HttpResponseNotFound(rtr_id)
+                key = router.hostname
                 form = PeeringRouterForm(instance=router)
-            context['form'] = form
+            context['form'] = {
+                'form': form,
+                'info': {
+                    'title': 'Peering Router',
+                    'key': key,
+                    'model': form.model()
+                },
+            }
         else:
             template = loader.get_template('prngmgr/table.html')
             table = {
