@@ -185,6 +185,8 @@ def routers(request, rtr_id):
             if form.is_valid():
                 router = form.save()
                 return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
+            else:
+                return HttpResponseNotFound('is_valid was false!')
         else:
             return HttpResponseRedirect(reverse('prngmgr-routers'))
     elif request.method == 'GET':
