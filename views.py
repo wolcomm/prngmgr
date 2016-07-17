@@ -168,15 +168,25 @@ def routers(request, rtr_id):
     context = {
         'view': {
             'name': 'routers',
-            'url': reverse('prngmgr-routers', kwargs = {}),
+            'url': reverse('prngmgr-routers'),
         }
     }
     if request.method == 'POST':
-        template = loader.get_template('prngmgr/form.html')
-        form = PeeringRouterForm(request.POST)
-        if form.is_valid():
-            router = form.save()
-            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
+        if rtr_id:
+            template = loader.get_template('prngmgr/form.html')
+            if int(rtr_id) == 0:
+                form = PeeringRouterForm(request.POST)
+            else:
+                try:
+                    router = PeeringRouter.objects.get(id=rtr_id)
+                except:
+                    return HttpResponseNotFound(rtr_id)
+                form = PeeringRouterForm(request.POST, instance=router)
+            if form.is_valid():
+                router = form.save()
+                return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
+        else:
+            return HttpResponseRedirect(reverse('prngmgr-routers'))
     elif request.method == 'GET':
         if rtr_id:
             template = loader.get_template('prngmgr/form.html')
@@ -196,6 +206,7 @@ def routers(request, rtr_id):
                 'info': {
                     'title': 'Peering Router',
                     'key': key,
+                    'post': reverse('prngmgr-routers', kwargs = { 'rtr_id': rtr_id }),
                 },
             }
         else:
