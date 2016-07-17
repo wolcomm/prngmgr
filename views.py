@@ -175,7 +175,7 @@ def routers(request, rtr_id):
                 try:
                     router = PeeringRouter.objects.get(id=rtr_id)
                 except:
-                    return HttpResponseNotFound(context)
+                    return HttpResponseNotFound(rtr_id)
                 form = PeeringRouterForm(instance=router)
             context['form'] = form
         else:
