@@ -23,21 +23,21 @@
       </ul>
       </form>
       {% if form.children %}
-          {% for formset in form.children %}
+          {% for child in form.children %}
           <form action="" method="post">
               <div class="panel panel-default">
-                  <div class="panel-heading">Formset Title</div>
+                  <div class="panel-heading">{{ child.title }}</div>
                   <table class="table table-condensed">
-                      {{ formset.management_form }}
+                      {{ child.formset.management_form }}
                       <thead>
                       <tr>
-                          {% for field in formset.forms.0 %}
+                          {% for field in child.formset.forms.0 %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
                       </tr>
                       </thead>
                       <tbody>
-                      {% for form in formset %}
+                      {% for form in child.formset %}
                           <tr>
                           {% for field in form %}
                               <td>{{ field }}</td>

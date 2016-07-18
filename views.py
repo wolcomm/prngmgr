@@ -209,7 +209,9 @@ def routers(request, rtr_id):
                 formset = InterfaceFormSet(instance=router)
             context['form'] = {
                 'parent': form,
-                'children': [formset],
+                'children': [
+                    { 'title': 'Peering Interfaces', 'formset': formset },
+                ],
                 'info': {
                     'title': 'Peering Router',
                     'key': key,

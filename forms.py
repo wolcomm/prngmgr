@@ -4,6 +4,7 @@ from django.forms import (
     ModelChoiceField,
 )
 from prngmgr.models import *
+from prngmgr.settings import *
 
 class NetworkIXLanChoiceField(ModelChoiceField):
     def label_from_instance(self, netixlan):
@@ -19,4 +20,6 @@ class PeeringRouterIXInterfaceForm(ModelForm):
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['netixlan']
-    netixlan = NetworkIXLanChoiceField(queryset=None)
+    netixlan = NetworkIXLanChoiceField(
+        queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN)
+    )
