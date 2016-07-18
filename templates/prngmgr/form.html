@@ -3,7 +3,7 @@
 {% block title %}{{ form.info.title }}: {{ form.info.key }}{% endblock %}
 
 {% block content %}
-<div class="panel panel-primary">
+<div class="panel panel-primary" xmlns="http://www.w3.org/1999/html">
   <div class="panel-heading">
     <h1 class="panel-title text-center">{{ form.info.title }}: {{ form.info.key }}</h1>
   </div>
@@ -32,7 +32,8 @@
                           {% for field in child.forms.0.form.visible_fields %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
-                          <th></th><th></th>
+                          <th></th>
+                          <th></th>
                       </tr>
                       </thead>
                       <tbody>
@@ -46,6 +47,7 @@
                           {% for field in form.form.visible_fields %}
                               <td>{{ field }}</td>
                           {% endfor %}
+                          <td><input type="hidden" name="test" value="value"><span>Some Text</span></input></td>
                           <td>
                               <button type="submit" class="{{ form.submit.class }}">
                                   {{ form.submit.value }}

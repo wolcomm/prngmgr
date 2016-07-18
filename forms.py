@@ -23,10 +23,10 @@ class PeeringRouterForm(ModelForm):
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
-    netixlan = CharField(
-        label='IXP Interface',
-        widget=TextInput(attrs={'readonly': True})
-    )
+    # netixlan = CharField(
+    #     label='IXP Interface',
+    #     widget=TextInput(attrs={'readonly': True})
+    # )
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
