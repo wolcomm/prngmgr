@@ -3,6 +3,10 @@ from django.forms import (
     BaseInlineFormSet,
     ModelChoiceField,
     CharField,
+    IntegerField,
+)
+from django.forms.widgets import (
+    HiddenInput,
 )
 from prngmgr.models import *
 from prngmgr.settings import *
@@ -18,6 +22,9 @@ class PeeringRouterForm(ModelForm):
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
+    prngrtr = IntegerField(
+        widget=HiddenInput
+    )
     netixlan = CharField(
         label='IXP Interface'
     )
@@ -26,6 +33,9 @@ class PeeringRouterIXInterfaceForm(ModelForm):
         fields = ['prngrtr', 'netixlan']
 
 class NewPeeringRouterIXInterfaceForm(ModelForm):
+    prngrtr = IntegerField(
+        widget=HiddenInput
+    )
     netixlan = NetworkIXLanChoiceField(
         queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
         label='IXP Interface'
