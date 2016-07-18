@@ -24,7 +24,6 @@
       </form>
       {% if form.children %}
           {% for child in form.children %}
-          <form action="" method="post">
               <div class="panel panel-default">
                   <div class="panel-heading">{{ child.title }}</div>
                   <table class="table table-condensed">
@@ -33,20 +32,24 @@
                           {% for field in child.forms.0 %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
+                          <th></th><th></th>
                       </tr>
                       </thead>
                       <tbody>
                       {% for form in child.forms %}
                           <tr>
+                          <form action="" method="post">
                           {% for field in form %}
                               <td>{{ field }}</td>
                           {% endfor %}
+                          <td>Save</td>
+                          <td>Delete</td>
+                          </form>
                           </tr>
                       {% endfor %}
                       </tbody>
                   </table>
               </div>
-          </form>
           {% endfor %}
       {% endif %}
   {% else %}
