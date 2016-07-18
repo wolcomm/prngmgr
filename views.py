@@ -353,7 +353,7 @@ def interfaces(request, if_id, if_delete):
                 if if_delete:
                     return HttpResponseNotFound('if_delete returned true')
                     router = interface.prngrtr
-                    interface.delete()
+                    PeeringRouterIXInterface.objects.filter(id=if_id).delete()
                     return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
                 form = PeeringRouterIXInterfaceForm(request.POST, instance=interface)
             interface = form.save()
