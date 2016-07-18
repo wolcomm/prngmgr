@@ -193,6 +193,7 @@ def routers(request, rtr_id):
             if int(rtr_id) == 0:
                 key = 'New'
                 form = PeeringRouterForm()
+                children = []
             else:
                 try:
                     router = PeeringRouter.objects.get(id=rtr_id)
