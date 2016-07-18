@@ -32,14 +32,11 @@ class PeeringRouterIXInterfaceForm(ModelForm):
         model = PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
 
-class NewPeeringRouterIXInterfaceForm(ModelForm):
-    prngrtr = IntegerField(
-        widget=HiddenInput
-    )
+class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
     netixlan = NetworkIXLanChoiceField(
         queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
         label='IXP Interface'
     )
-    class Meta:
-        model = PeeringRouterIXInterface
-        fields = ['prngrtr', 'netixlan']
+    # class Meta:
+    #     model = PeeringRouterIXInterface
+    #     fields = ['prngrtr', 'netixlan']
