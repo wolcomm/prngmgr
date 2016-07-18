@@ -6,6 +6,7 @@ from django.forms import (
     IntegerField,
 )
 from django.forms.widgets import (
+    TextInput,
     HiddenInput,
 )
 from prngmgr.models import *
