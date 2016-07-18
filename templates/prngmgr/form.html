@@ -38,12 +38,12 @@
                       <tbody>
                       {% for form in child.forms %}
                           <tr>
-                          <form action="" method="post">
+                          <form action="{{ child.url }}" method="post">
                           {% for field in form %}
                               <td>{{ field }}</td>
                           {% endfor %}
-                          <td>Save</td>
-                          <td>Delete</td>
+                          <td><button class="btn btn-primary">Save</button></td>
+                          <td><button class="btn btn-danger">Delete</button></td>
                           </form>
                           </tr>
                       {% endfor %}

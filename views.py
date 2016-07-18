@@ -200,22 +200,16 @@ def routers(request, rtr_id):
                     return HttpResponseNotFound(rtr_id)
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
-#                InterfaceFormSet = inlineformset_factory(
-#                    PeeringRouter, PeeringRouterIXInterface,
-#                    form=PeeringRouterIXInterfaceForm,
-#                    fields=('netixlan',),
-#                    labels={ 'netixlan': "IX LAN Interface" },
-#                    extra=2
-#                )
-#                formset = InterfaceFormSet(instance=router)
-                child = {'title': 'Peering Interfaces', 'forms': [] }
+                children = [
+                    { 'title': 'Peering Interfaces', 'url': reverse('prngmgr-interfaces'), 'forms': [] }
+                ]
                 interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
                 for interface in interfaces:
-                    child['forms'].append(PeeringRouterIXInterfaceForm(instance=interface))
-                child['forms'].append(PeeringRouterIXInterfaceForm())
+                    children[0]['forms'].append(PeeringRouterIXInterfaceForm(instance=interface))
+                child[0]['forms'].append(PeeringRouterIXInterfaceForm())
             context['form'] = {
                 'parent': form,
-                'children': [ child ],
+                'children': children,
                 'info': {
                     'title': 'Peering Router',
                     'key': key,
@@ -338,6 +332,11 @@ def ixps(request, ixp_id):
         })
         context['table']['rows'].append(row)
     return HttpResponse(template.render(context, request))
+
+def interfaces(request, if_id):
+    interface = PeeringRouterIXInterface.objects.get(id=if_id)
+    router = interface.prngrtr
+    return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
 
 def _render_alerts(calculated):
     if calculated['count']['possible'] == 0:
