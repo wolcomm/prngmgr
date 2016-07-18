@@ -12,6 +12,11 @@ from django.forms.widgets import (
 from prngmgr.models import *
 from prngmgr.settings import *
 
+class NetworkIXLanHiddenWidget(TextInput):
+    def __init__(self, attrs=None):
+        attrs.update(hidden=True)
+        super(NetworkIXLanHiddenWidget,self).__init__(attrs)
+
 class NetworkIXLanChoiceField(ModelChoiceField):
     def label_from_instance(self, netixlan):
         label = "%s // %s // %s" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
@@ -23,10 +28,10 @@ class PeeringRouterForm(ModelForm):
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
-    # netixlan = CharField(
-    #     label='IXP Interface',
-    #     widget=TextInput(attrs={'readonly': True})
-    # )
+    netixlan = CharField(
+        label='IXP Interface',
+        widget=NetworkIXLanHiddenWidget
+    )
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
