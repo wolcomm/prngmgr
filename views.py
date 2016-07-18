@@ -200,19 +200,22 @@ def routers(request, rtr_id):
                     return HttpResponseNotFound(rtr_id)
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
-                InterfaceFormSet = inlineformset_factory(
-                    PeeringRouter, PeeringRouterIXInterface,
-                    form=PeeringRouterIXInterfaceForm,
+#                InterfaceFormSet = inlineformset_factory(
+#                    PeeringRouter, PeeringRouterIXInterface,
+#                    form=PeeringRouterIXInterfaceForm,
 #                    fields=('netixlan',),
 #                    labels={ 'netixlan': "IX LAN Interface" },
-                    extra=2
-                )
-                formset = InterfaceFormSet(instance=router)
+#                    extra=2
+#                )
+#                formset = InterfaceFormSet(instance=router)
+                child = {'title': 'Peering Interfaces', 'forms': [] }
+                interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
+                for interface in interfaces:
+                    child['forms'].append(PeeringRouterIXInterfaceForm(instance=interface))
+                child['forms'].append(PeeringRouterIXInterfaceForm())
             context['form'] = {
                 'parent': form,
-                'children': [
-                    { 'title': 'Peering Interfaces', 'formset': formset },
-                ],
+                'children': [ child ],
                 'info': {
                     'title': 'Peering Router',
                     'key': key,

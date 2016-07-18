@@ -28,16 +28,15 @@
               <div class="panel panel-default">
                   <div class="panel-heading">{{ child.title }}</div>
                   <table class="table table-condensed">
-                      {{ child.formset.management_form }}
                       <thead>
                       <tr>
-                          {% for field in child.formset.forms.0 %}
+                          {% for field in child.forms.0 %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
                       </tr>
                       </thead>
                       <tbody>
-                      {% for form in child.formset %}
+                      {% for form in child.forms %}
                           <tr>
                           {% for field in form %}
                               <td>{{ field }}</td>
