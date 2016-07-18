@@ -47,13 +47,8 @@
                               <td>{{ field }}</td>
                           {% endfor %}
                           <td>
-                              <button type="submit" class="btn btn-primary">
-                                  Save
-                              </button>
-                          </td>
-                          <td>
-                              <button type="submit" formaction="{{ form.post }}/delete" class="btn btn-danger">
-                                  Delete
+                              <button type="submit" class="{{ form.submit.class }}">
+                                  {{ form.submit.value }}
                               </button>
                           </td>
                           </form>

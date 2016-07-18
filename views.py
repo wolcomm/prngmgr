@@ -206,12 +206,14 @@ def routers(request, rtr_id):
                 interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
                 for interface in interfaces:
                     children[0]['forms'].append({
-                        'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': interface.id }),
-                        'form': PeeringRouterIXInterfaceForm(instance=interface)
+                        'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': interface.id, 'if_delete': '/delete' }),
+                        'form': PeeringRouterIXInterfaceForm(instance=interface),
+                        'submit': {'class': 'btn btn-danger', 'value': 'Delete'},
                     })
                 children[0]['forms'].append({
                     'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': 0 }),
-                    'form': NewPeeringRouterIXInterfaceForm(initial={'prngrtr': router.id})
+                    'form': NewPeeringRouterIXInterfaceForm(initial={'prngrtr': router.id}),
+                    'submit': {'class': 'btn btn-primary', 'value': 'Save'},
                 })
             context['form'] = {
                 'parent': form,
