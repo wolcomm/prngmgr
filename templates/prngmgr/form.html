@@ -46,8 +46,16 @@
                           {% for field in form.form.visible_fields %}
                               <td>{{ field }}</td>
                           {% endfor %}
-                          <td><button class="btn btn-primary">Save</button></td>
-                          <td><button class="btn btn-danger">Delete</button></td>
+                          <td>
+                              <button type="submit" class="btn btn-primary">
+                                  Save
+                              </button>
+                          </td>
+                          <td>
+                              <button type="submit" formaction="{{ form.post }}/delete" class="btn btn-danger">
+                                  Delete
+                              </button>
+                          </td>
                           </form>
                           </tr>
                       {% endfor %}

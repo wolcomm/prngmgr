@@ -339,7 +339,7 @@ def ixps(request, ixp_id):
         context['table']['rows'].append(row)
     return HttpResponse(template.render(context, request))
 
-def interfaces(request, if_id):
+def interfaces(request, if_id, if_delete):
     if request.method == 'POST':
         if if_id:
             if_id = int(if_id)
@@ -350,6 +350,10 @@ def interfaces(request, if_id):
                     interface = PeeringRouterIXInterface.objects.get(id=if_id)
                 except:
                     return HttpResponseNotFound(if_id)
+                if if_delete:
+                    router = interface.prngrtr
+                    interface.delete()
+                    return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
                 form = PeeringRouterIXInterfaceForm(request.POST, instance=interface)
             interface = form.save()
             router = interface.prngrtr
