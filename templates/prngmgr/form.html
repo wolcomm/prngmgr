@@ -39,6 +39,7 @@
                       {% for form in child.forms %}
                           <tr>
                           <form action="{{ child.url }}" method="post">
+                          {% csrf_token %}
                           {% for field in form %}
                               <td>{{ field }}</td>
                           {% endfor %}
