@@ -340,9 +340,23 @@ def ixps(request, ixp_id):
     return HttpResponse(template.render(context, request))
 
 def interfaces(request, if_id):
-    interface = PeeringRouterIXInterface.objects.get(id=if_id)
-    router = interface.prngrtr
-    return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
+    if request.method == 'POST':
+        if if_id:
+            if int(if_id) == 0:
+                form = PeeringRouterIXInterfaceForm(request.POST)
+            else:
+                try:
+                    interface = PeeringRouterIXInterface.objects.get(id=if_id)
+                except:
+                    return HttpResponseNotFound(if_id)
+                form = PeeringRouterIXInterfaceForm(request.POST, instance=interface)
+            interface = form.save()
+            router = interface.prngrtr
+            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
+        else:
+            return HttpResponseRedirect(reverse('prngmgr-routers'))
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 def _render_alerts(calculated):
     if calculated['count']['possible'] == 0:
