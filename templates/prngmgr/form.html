@@ -29,7 +29,7 @@
                   <table class="table table-condensed">
                       <thead>
                       <tr>
-                          {% for field in child.forms.0 %}
+                          {% for field in child.forms.0.form %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
                           <th></th><th></th>
@@ -38,9 +38,9 @@
                       <tbody>
                       {% for form in child.forms %}
                           <tr>
-                          <form action="{{ child.url }}" method="post">
+                          <form action="{{ form.post }}" method="post">
                           {% csrf_token %}
-                          {% for field in form %}
+                          {% for field in form.form %}
                               <td>{{ field }}</td>
                           {% endfor %}
                           <td><button class="btn btn-primary">Save</button></td>

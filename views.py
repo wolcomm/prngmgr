@@ -201,12 +201,18 @@ def routers(request, rtr_id):
                 key = router.hostname
                 form = PeeringRouterForm(instance=router)
                 children = [
-                    { 'title': 'Peering Interfaces', 'url': reverse('prngmgr-interfaces'), 'forms': [] }
+                    { 'title': 'Peering Interfaces', 'forms': [] }
                 ]
                 interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
                 for interface in interfaces:
-                    children[0]['forms'].append(PeeringRouterIXInterfaceForm(instance=interface))
-                children[0]['forms'].append(PeeringRouterIXInterfaceForm())
+                    children[0]['forms'].append({
+                        'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': interface.id }),
+                        'form': PeeringRouterIXInterfaceForm(instance=interface)
+                    })
+                children[0]['forms'].append({
+                    'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': 0 }),
+                    'form': PeeringRouterIXInterfaceForm()
+                })
             context['form'] = {
                 'parent': form,
                 'children': children,
