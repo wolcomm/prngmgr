@@ -31,7 +31,7 @@ class NetworkIXLanHiddenWidget(TextInput):
 
 class NetworkIXLanChoiceField(ModelChoiceField):
     def label_from_instance(self, netixlan):
-        label = "%s // %s // %s" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
+        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
         return label
 
 class PeeringRouterForm(ModelForm):
