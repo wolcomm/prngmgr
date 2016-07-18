@@ -31,6 +31,7 @@ class PeeringRouterIXInterfaceForm(ModelForm):
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
+        widgets = {'prngrtr': HiddenInput}
 
 class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
     netixlan = NetworkIXLanChoiceField(
