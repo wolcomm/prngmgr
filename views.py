@@ -342,7 +342,8 @@ def ixps(request, ixp_id):
 def interfaces(request, if_id):
     if request.method == 'POST':
         if if_id:
-            if int(if_id) == 0:
+            if_id = int(if_id)
+            if if_id == 0:
                 form = PeeringRouterIXInterfaceForm(request.POST)
             else:
                 try:
