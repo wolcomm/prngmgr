@@ -55,7 +55,7 @@ class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
     available = NetworkIXLan.objects.filter(
         net__asn=MY_ASN
     ).exclude(
-        PeeringRouterIXInterface.objects.all().values('netixlan')
+        id__in=PeeringRouterIXInterface.objects.all().values('netixlan')
     )
     netixlan = NetworkIXLanChoiceField(
         queryset=available,
