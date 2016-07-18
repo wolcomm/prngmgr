@@ -14,7 +14,10 @@ from prngmgr.settings import *
 
 class NetworkIXLanHiddenWidget(TextInput):
     def __init__(self, attrs=None):
-        attrs.update(hidden=True)
+        if attrs:
+            attrs.update(hidden=True)
+        else:
+            attrs = dict(hidden=True)
         super(NetworkIXLanHiddenWidget,self).__init__(attrs)
 
 class NetworkIXLanChoiceField(ModelChoiceField):
