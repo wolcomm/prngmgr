@@ -20,6 +20,15 @@ class NetworkIXLanHiddenWidget(TextInput):
             attrs = dict(hidden=True)
         super(NetworkIXLanHiddenWidget,self).__init__(attrs)
 
+    def render(self, name, value, attrs=None):
+        netixlan = NetworkIXLan.objects.get(id=value)
+        label = "%s // %s // %s" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
+        html = "%s<b>%s</b>" % (
+            super(NetworkIXLanHiddenWidget, self).render(name, value, attrs),
+            label
+        )
+        return html
+
 class NetworkIXLanChoiceField(ModelChoiceField):
     def label_from_instance(self, netixlan):
         label = "%s // %s // %s" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)

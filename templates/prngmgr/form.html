@@ -33,7 +33,6 @@
                           <th>{{ field.label }}</th>
                           {% endfor %}
                           <th></th>
-                          <th></th>
                       </tr>
                       </thead>
                       <tbody>
@@ -47,13 +46,6 @@
                           {% for field in form.form.visible_fields %}
                               <td>{{ field }}</td>
                           {% endfor %}
-                          <td>
-                              <select name="test" hidden>
-                                  <option value="1" selected>One</option>
-                                  <option value="2">Two</option>
-                              </select>
-                              <span>Some Visible Text</span>
-                          </td>
                           <td>
                               <button type="submit" class="{{ form.submit.class }}">
                                   {{ form.submit.value }}
