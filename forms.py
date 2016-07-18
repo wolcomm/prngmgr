@@ -17,9 +17,7 @@ class PeeringRouterForm(ModelForm):
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
+    netixlan = NetworkIXLanChoiceField(queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN))
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['netixlan']
-    netixlan = NetworkIXLanChoiceField(
-        queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN)
-    )
