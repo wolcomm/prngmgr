@@ -211,7 +211,7 @@ def routers(request, rtr_id):
                     })
                 children[0]['forms'].append({
                     'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': 0 }),
-                    'form': NewPeeringRouterIXInterfaceForm()
+                    'form': NewPeeringRouterIXInterfaceForm(initial={'prngrtr': router.id})
                 })
             context['form'] = {
                 'parent': form,
