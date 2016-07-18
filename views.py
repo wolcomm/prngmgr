@@ -206,7 +206,7 @@ def routers(request, rtr_id):
                 interfaces = PeeringRouterIXInterface.objects.filter(prngrtr=router)
                 for interface in interfaces:
                     children[0]['forms'].append(PeeringRouterIXInterfaceForm(instance=interface))
-                child[0]['forms'].append(PeeringRouterIXInterfaceForm())
+                children[0]['forms'].append(PeeringRouterIXInterfaceForm())
             context['form'] = {
                 'parent': form,
                 'children': children,
