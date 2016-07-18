@@ -2,6 +2,7 @@ from django.forms import (
     ModelForm,
     BaseInlineFormSet,
     ModelChoiceField,
+    CharField,
 )
 from prngmgr.models import *
 from prngmgr.settings import *
@@ -17,8 +18,17 @@ class PeeringRouterForm(ModelForm):
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
-    netixlan = NetworkIXLanChoiceField(queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN))
+    netixlan = CharField(
+        label='IXP Interface'
+    )
+    class Meta:
+        model = PeeringRouterIXInterface
+
+class NewPeeringRouterIXInterfaceForm(ModelForm):
+    netixlan = NetworkIXLanChoiceField(
+        queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
+        label='IXP Interface'
+    )
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['netixlan']
-        labels = { 'netixlan': 'IXP LAN Interface' }
