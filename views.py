@@ -202,6 +202,7 @@ def routers(request, rtr_id):
                 form = PeeringRouterForm(instance=router)
                 InterfaceFormSet = inlineformset_factory(
                     PeeringRouter, PeeringRouterIXInterface,
+                    form=PeeringRouterIXInterfaceForm,
                     fields=('netixlan',),
                     extra=2
                 )
