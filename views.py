@@ -213,7 +213,7 @@ def routers(request, rtr_id):
                 children[0]['forms'].append({
                     'post': reverse('prngmgr-interfaces', kwargs = { 'if_id': 0 }),
                     'form': NewPeeringRouterIXInterfaceForm(initial={'prngrtr': router.id}),
-                    'submit': {'class': 'btn btn-primary', 'value': 'Save'},
+                    'submit': {'class': 'btn btn-primary', 'value': 'Add'},
                 })
             context['form'] = {
                 'parent': form,

@@ -22,8 +22,8 @@ class NetworkIXLanHiddenWidget(TextInput):
 
     def render(self, name, value, attrs=None):
         netixlan = NetworkIXLan.objects.get(id=value)
-        label = "%s // %s // %s" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
-        html = "%s<b>%s</b>" % (
+        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
+        html = "%s<i>%s</i>" % (
             super(NetworkIXLanHiddenWidget, self).render(name, value, attrs),
             label
         )
@@ -53,6 +53,7 @@ class PeeringRouterIXInterfaceForm(ModelForm):
 
 class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
     netixlan = NetworkIXLanChoiceField(
-        queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
+        # queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
+        queryset=NetworkIXLan.objects.all(),
         label='IXP Interface'
     )
