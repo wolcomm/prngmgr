@@ -8,6 +8,7 @@ from django_inet.models import (
     URLField
 )
 from django_peeringdb.models.concrete import *
+from prngmgr.settings import *
 
 ALERT_NONE = 0
 ALERT_SUCCESS = 1
@@ -31,7 +32,11 @@ class PeeringRouterIXInterfaceBase(HandleRefModel):
         tag = "prngrtriface"
 
 class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
-    netixlan = models.OneToOneField(NetworkIXLan, default=0, related_name="+", null=True)
+    netixlan = models.OneToOneField(
+        NetworkIXLan,
+        default=0, related_name="+", null=True,
+        limit_choices_to={'net__asn': MY_ASN}
+    )
     prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
 
 class PeeringSessionBase(HandleRefModel):
