@@ -21,3 +21,4 @@ class PeeringRouterIXInterfaceForm(ModelForm):
     class Meta:
         model = PeeringRouterIXInterface
         fields = ['netixlan']
+        labels = { 'netixlan': 'IXP LAN Interface' }
