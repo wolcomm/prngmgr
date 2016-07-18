@@ -29,7 +29,7 @@
                   <table class="table table-condensed">
                       <thead>
                       <tr>
-                          {% for field in child.forms.0.form %}
+                          {% for field in child.forms.0.form.visible_fields %}
                           <th>{{ field.label }}</th>
                           {% endfor %}
                           <th></th><th></th>
