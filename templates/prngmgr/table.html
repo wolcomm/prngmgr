@@ -6,7 +6,10 @@
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function() {
     $('#{{ table.name }}').DataTable( {
-      "pageLength": 50
+        "pageLength": 50
+        select: {
+            style: 'os'
+        }
     } );
   } );
 </script>
