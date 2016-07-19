@@ -52,7 +52,7 @@ def sessions(request, filter_field, filter_arg):
             ],
             'select': {
                 'style': 'os',
-                'blurable': True,
+                'blurable': 'true',
             },
         },
     }
