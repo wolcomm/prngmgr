@@ -13,9 +13,9 @@
         blurable: {{ table.select.blurable }}
       },
       {% endif %}
-      {% if buttons %}
+      {% if table.buttons %}
       buttons: [
-        {% for button in buttons %}
+        {% for button in table.buttons %}
           {
               text: "{{ button.text }}",
               action: {{ button.action }},
