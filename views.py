@@ -241,6 +241,10 @@ def routers(request, rtr_id):
                 ],
                 'rows': [
                 ],
+                'select': {
+                    'style': 'single',
+                    'blurable': 'true',
+                },
             }
             routers = PeeringRouter.objects.all()
             for router in routers:
