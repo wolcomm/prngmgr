@@ -195,6 +195,7 @@ def routers(request, rtr_id):
                 form = PeeringRouterForm()
                 children = []
             else:
+                # TODO: Add "Delete" and "Back" controls
                 try:
                     router = PeeringRouter.objects.get(id=rtr_id)
                 except:
@@ -226,6 +227,7 @@ def routers(request, rtr_id):
                 },
             }
         else:
+            # TODO: Add actions menu, selectable rows
             template = loader.get_template('prngmgr/table.html')
             table = {
                 'name': 'routers',
