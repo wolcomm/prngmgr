@@ -50,12 +50,14 @@ def sessions(request, filter_field, filter_arg):
             ],
             'rows': [
             ],
-        },
-        'filter': {
+            'select': {
+                'style': 'os',
+                'blurable': True,
+            },
         },
     }
     if filter_field:
-        context['filter'] = {
+        context['table']['filter'] = {
             'field': filter_field,
             'arg': filter_arg,
         }
@@ -119,8 +121,6 @@ def networks(request, net_id):
             ],
             'rows': [
             ],
-        },
-        'filter': {
         },
     }
     networks = Network.objects.all()
@@ -241,8 +241,6 @@ def routers(request, rtr_id):
                 ],
                 'rows': [
                 ],
-                'filter': {
-                },
             }
             routers = PeeringRouter.objects.all()
             for router in routers:
@@ -300,8 +298,6 @@ def ixps(request, ixp_id):
             ],
             'rows': [
             ],
-        },
-        'filter': {
         },
     }
     ixps = InternetExchange.objects.all()
