@@ -16,11 +16,15 @@
       {% if table.buttons %}
       buttons: [
         {% for button in table.buttons %}
+          {% if button == 'New' %}
           {
-              text: "{{ button.text }}",
-              action: {{ button.action }},
+            text: "New",
+            action: function (e,dt,node,config) {
+              alert("New!");
+            },
           },
-          {% endfor %}
+          {% end if %}
+        {% endfor %}
       ],
       {% endif %}
     } );

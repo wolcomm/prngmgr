@@ -245,9 +245,7 @@ def routers(request, rtr_id):
                     'style': 'single',
                     'blurable': 'true',
                 },
-                'buttons': [
-                    { 'text': "New", 'action': 'function (e,dt,node,config) {alert("New!");}'},
-                ],
+                'buttons': [ 'New' ],
             }
             routers = PeeringRouter.objects.all()
             for router in routers:
