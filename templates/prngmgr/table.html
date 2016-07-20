@@ -14,18 +14,20 @@
       },
       {% endif %}
       {% if table.buttons %}
-      buttons: [
-        {% for button in table.buttons %}
-          {% if button == 'New' %}
-          {
-            text: "New",
-            action: function (e,dt,node,config) {
-              alert("New!");
-            },
-          },
-          {% endif %}
-        {% endfor %}
-      ],
+      buttons: {
+          buttons: [
+              {% for button in table.buttons %}
+                  {% if button == 'New' %}
+                      {
+                          text: "New",
+                          action: function (e, dt, node, config) {
+                              alert("New!");
+                          },
+                      },
+                  {% endif %}
+              {% endfor %}
+          ],
+      },
       {% endif %}
     } );
   } );
