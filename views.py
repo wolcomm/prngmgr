@@ -245,7 +245,6 @@ def routers(request, rtr_id):
                     'style': 'single',
                     'blurable': 'true',
                 },
-                'buttons': [ 'New' ],
             }
             routers = PeeringRouter.objects.all()
             for router in routers:

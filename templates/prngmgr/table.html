@@ -7,26 +7,11 @@
   $(document).ready(function() {
     $('#{{ table.name }}').DataTable( {
       "pageLength": 50,
-      dom: 'lBfrtip',
       {% if table.select %}
       select: {
         style: "{{ table.select.style }}",
         blurable: {{ table.select.blurable }}
       },
-      {% endif %}
-      {% if table.buttons %}
-      buttons: [
-              {% for button in table.buttons %}
-                  {% if button == 'New' %}
-                      {
-                          text: "New",
-                          action: function (e, dt, node, config) {
-                              alert("New!");
-                          },
-                      },
-                  {% endif %}
-              {% endfor %}
-      ],
       {% endif %}
     } );
   } );
