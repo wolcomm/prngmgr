@@ -15,8 +15,7 @@
       },
       {% endif %}
       {% if table.buttons %}
-      buttons: {
-          buttons: [
+      buttons: [
               {% for button in table.buttons %}
                   {% if button == 'New' %}
                       {
@@ -27,8 +26,7 @@
                       },
                   {% endif %}
               {% endfor %}
-          ],
-      },
+      ],
       {% endif %}
     } );
   } );
