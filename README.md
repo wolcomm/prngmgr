@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wolcomm/prngmgr.svg?branch=master)](https://travis-ci.org/wolcomm/prngmgr)
+
 # PrngMgr
 
 A Django webapp for peering session management using PeeringDB API
