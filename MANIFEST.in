@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include INSTALL
+include packaging/VERSION
+recursive-include docs *
+recursive-include packaging *.txt
+recursive-include prngmgr/templates *.html
+recursive-include prngmgr/static/css *.css
+recursive-include prngmgr/static/js *.js
+exclude prngmgr/local_settings.py
