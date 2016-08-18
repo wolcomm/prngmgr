@@ -1,3 +1,4 @@
+[![PyPI](https://img.shields.io/pypi/v/prngmgr.svg?maxAge=2592000)](https://pypi.python.org/pypi/prngmgr)
 [![Build Status](https://travis-ci.org/wolcomm/prngmgr.svg?branch=master)](https://travis-ci.org/wolcomm/prngmgr)
 
 # PrngMgr
