@@ -1,0 +1,67 @@
+{% extends "prngmgr/base.html" %}
+
+{% block title %}{{ form.info.title }}: {{ form.info.key }}{% endblock %}
+
+{% block content %}
+<div class="panel panel-primary" xmlns="http://www.w3.org/1999/html">
+  <div class="panel-heading">
+    <h1 class="panel-title text-center">{{ form.info.title }}: {{ form.info.key }}</h1>
+  </div>
+  <div class="panel-body">
+  {% if form.parent %}
+      <form action="{{ form.info.post }}" method="post">
+      {% csrf_token %}
+      <ul class="list-group">
+          {% for field in form.parent %}
+          <li class="list-group-item">
+              {{ field.label_tag }} {{ field }}
+          </li>
+          {% endfor %}
+          <li class="list-group-item">
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </li>
+      </ul>
+      </form>
+      {% if form.children %}
+          {% for child in form.children %}
+              <div class="panel panel-default">
+                  <div class="panel-heading">{{ child.title }}</div>
+                  <table class="table table-condensed">
+                      <thead>
+                      <tr>
+                          {% for field in child.forms.0.form.visible_fields %}
+                          <th>{{ field.label }}</th>
+                          {% endfor %}
+                          <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for form in child.forms %}
+                          <tr>
+                          <form action="{{ form.post }}" method="post">
+                          {% csrf_token %}
+                          {% for field in form.form.hidden_fields %}
+                              {{ field }}
+                          {% endfor %}
+                          {% for field in form.form.visible_fields %}
+                              <td>{{ field }}</td>
+                          {% endfor %}
+                          <td>
+                              <button type="submit" class="{{ form.submit.class }}">
+                                  {{ form.submit.value }}
+                              </button>
+                          </td>
+                          </form>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          {% endfor %}
+      {% endif %}
+  {% else %}
+    <p>No form found</p>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

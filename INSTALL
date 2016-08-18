@@ -1,0 +1,61 @@
+# create new django project
+django-admin startproject myprngmgr
+cd myprngmgr/
+
+# clone prngmgr github repo
+git clone https://github.com/benmaddison/prngmgr.git
+
+# install django_peeringdb from pip
+
+# add django_peeringdb and prngmgr to installed apps
+#   and add PDB config to end of file
+vi ../myprngmgr/settings.py
+
+INSTALLED_APPS = (
+    'prngmgr',
+    'django_peeringdb',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+)
+
+COUNTRIES_OVERRIDE = {
+   'XK': 'Kosovo',
+}
+PEERINGDB_ABSTRACT_ONLY = False
+#PEERINGDB_SYNC_STRIP_TZ = True
+
+# add "include" url path to projects root urls.py
+vi ../myprngmgr/urls.py
+
+urlpatterns = [
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include('prngmgr.urls')),
+]
+
+# copy local_settings.py.example to local_settings.py and edit values
+cp docs/examples/local_settings.py.example local_settings.py
+
+MY_ASN = 65000
+
+SNMP = {
+    'port': 161,
+    'user': 'v3Username',
+    'authPass': 'authPass',
+    'privKey': 'privKey',
+}
+
+# initialize database
+python manage.py makemigrations
+python manage.py migrate
+
+# sync data with peeringdb
+python manage.py prngmgr-sync
+
+# start development webserver
+python manage.py runserver 0.0.0.0:8080
+
+# go to http://localhost:8080/ and have a look around

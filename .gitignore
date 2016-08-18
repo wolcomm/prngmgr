@@ -94,6 +94,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# PyDev project settings
+.project
+.pydevproject
+
 # Other settings
 /DjangoProject_prngmgr/
 /templates/

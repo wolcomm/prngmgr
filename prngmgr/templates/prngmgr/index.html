@@ -1,0 +1,12 @@
+{% extends "prngmgr/base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+<h1>Welcome to Peering Manager</h1>
+{% if me %}
+<p class="lead">We are {{ me.name }}, AS{{ me.asn }}</p>
+{% else %}
+<p>Can't find our PDB record. Please check prngmgr/local_settings.py</p>
+{% endif %}
+</div>
+{% endblock %}
