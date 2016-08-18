@@ -12,10 +12,10 @@ context = ContextData()
 
 def Get(host, oid):
     target = UdpTransportTarget((host, SNMP['port']))
-    object = ObjectIdentity(oid)
+    obj = ObjectIdentity(oid)
 
     errorIndication, errorStatus, errorIndex, varBinds = next(
-        getCmd(snmp, usm, target, context, ObjectType(object))
+        getCmd(snmp, usm, target, context, ObjectType(obj))
     )
 
     if errorIndication:
@@ -29,7 +29,7 @@ def Get(host, oid):
     return result
 
 def GetBGPTable(host):
-    object = ObjectIdentity('CISCO-BGP4-MIB', 'cbgpPeer2Table')
+    obj = ObjectIdentity('CISCO-BGP4-MIB', 'cbgpPeer2Table')
     target = UdpTransportTarget((host, SNMP['port']))
 
     results = defaultdict(dict)
@@ -42,7 +42,7 @@ def GetBGPTable(host):
                               target,
                               context,
                               0, 25,
-                              ObjectType(object),
+                              ObjectType(obj),
                               lexicographicMode=False,
                               lookupMib=True):
 
@@ -67,7 +67,7 @@ def GetBGPTable(host):
 
 def GetTable(host, oid):
     target = UdpTransportTarget((host, SNMP['port']))
-    object = ObjectIdentity(oid)
+    obj = ObjectIdentity(oid)
 
     results = []
 
@@ -79,7 +79,7 @@ def GetTable(host, oid):
                               target,
                               context,
                               0, 25,
-                              ObjectType(object),
+                              ObjectType(obj),
                               lexicographicMode=False,
                               lookupMib=True):
 
