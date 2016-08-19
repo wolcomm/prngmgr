@@ -1,0 +1,11 @@
+{% if pl.desc %}
+{{ pl.af }} prefix-list {{ pl.name }} description {{ pl.desc }}
+{% endif %}
+{% if pl.prefixes.count %}
+{% for p in pl.prefixes %}
+{# TODO: add support for ge and le keywords #}
+{{ af }} prefix-list {{ pl.name }} seq {{ p.seq }} {{ p.action }} {{ p.prefix }}
+{% endfor %}
+{% else %}
+{# TODO: add support for empty prefix lists #}
+{% endif %}
