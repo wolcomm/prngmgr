@@ -5,10 +5,13 @@ from collections import defaultdict
 from ipaddress import *
 
 snmp = SnmpEngine()
-usm = UsmUserData(SNMP['user'], SNMP['authPass'], SNMP['privKey'],
+usm = UsmUserData(
+    SNMP['user'], SNMP['authPass'], SNMP['privKey'],
     authProtocol=usmHMACSHAAuthProtocol,
-    privProtocol=usmAesCfb128Protocol)
+    privProtocol=usmAesCfb128Protocol
+)
 context = ContextData()
+
 
 def Get(host, oid):
     target = UdpTransportTarget((host, SNMP['port']))
@@ -27,6 +30,7 @@ def Get(host, oid):
         for varBind in varBinds:
             result = ' = '.join([x.prettyPrint() for x in varBind])
     return result
+
 
 def GetBGPTable(host):
     obj = ObjectIdentity('CISCO-BGP4-MIB', 'cbgpPeer2Table')
@@ -50,7 +54,7 @@ def GetBGPTable(host):
             print(errorIndication)
         elif errorStatus:
             print('%s at %s' % (errorStatus.prettyPrint(),
-                                errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'))
+                                errorIndex and varBinds[-1][int(errorIndex)-1] or '?'))
         else:
             for (key, val) in varBinds:
                 (mib, name, index) = key.loadMibs('BGP4-MIB').getMibSymbol()
@@ -87,7 +91,7 @@ def GetTable(host, oid):
             print(errorIndication)
         elif errorStatus:
             print('%s at %s' % (errorStatus.prettyPrint(),
-                                errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'))
+                                errorIndex and varBinds[-1][int(errorIndex)-1] or '?'))
         else:
             for varBind in varBinds:
                 print(' = '.join([x.prettyPrint() for x in varBind]))
