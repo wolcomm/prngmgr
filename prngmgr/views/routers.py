@@ -8,6 +8,7 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings, models, forms
+from prngmgr.views import utils
 
 me = Network.objects.get(asn=settings.MY_ASN)
 
@@ -97,7 +98,7 @@ def routers(request, rtr_id):
             for router in routers:
                 interfaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=router)
                 sessions = models.PeeringSession.objects.filter(prngrtriface__prngrtr=router)
-                calculated = _render_alerts({
+                calculated = utils.render_alerts({
                     'count': {
                         'interfaces': interfaces.count(),
                         'possible': sessions.count(),
@@ -130,71 +131,3 @@ def routers(request, rtr_id):
         return HttpResponse(template.render(context, request))
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
-
-
-def interfaces(request, if_id, if_delete):
-    if request.method == 'POST':
-        if if_id:
-            if_id = int(if_id)
-            if if_id == 0:
-                form = forms.PeeringRouterIXInterfaceForm(request.POST)
-            else:
-                try:
-                    interface = models.PeeringRouterIXInterface.objects.get(id=if_id)
-                except:
-                    return HttpResponseNotFound(if_id)
-                if if_delete:
-                    router = interface.prngrtr
-                    models.PeeringRouterIXInterface.objects.filter(id=if_id).delete()
-                    return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
-                form = forms.PeeringRouterIXInterfaceForm(request.POST, instance=interface)
-            interface = form.save()
-            router = interface.prngrtr
-            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs = { 'rtr_id': router.id }))
-        else:
-            return HttpResponseRedirect(reverse('prngmgr-routers'))
-    else:
-        return HttpResponseNotAllowed(['POST'])
-
-
-def _render_alerts(calculated):
-    if calculated['count']['possible'] == 0:
-        calculated['alert'] = {
-            'possible': models.ALERT_NONE,
-            'provisioned': models.ALERT_NONE,
-            'established': models.ALERT_NONE,
-        }
-    else:
-        if calculated['count']['provisioned'] == 0:
-            calculated['alert'] = {
-                'possible': models.ALERT_SUCCESS,
-                'provisioned': models.ALERT_DANGER,
-                'established': models.ALERT_DANGER,
-            }
-        elif calculated['count']['provisioned'] < calculated['count']['possible']:
-            if calculated['count']['established'] < calculated['count']['provisioned']:
-                calculated['alert'] = {
-                    'possible': models.ALERT_SUCCESS,
-                    'provisioned': models.ALERT_WARNING,
-                    'established': models.ALERT_DANGER,
-                }
-            else:
-                calculated['alert'] = {
-                    'possible': models.ALERT_SUCCESS,
-                    'provisioned': models.ALERT_WARNING,
-                    'established': models.ALERT_WARNING,
-                }
-        else:
-            if calculated['count']['established'] < calculated['count']['provisioned']:
-                calculated['alert'] = {
-                    'possible': models.ALERT_SUCCESS,
-                    'provisioned': models.ALERT_SUCCESS,
-                    'established': models.ALERT_DANGER,
-                }
-            else:
-                calculated['alert'] = {
-                    'possible': models.ALERT_SUCCESS,
-                    'provisioned': models.ALERT_SUCCESS,
-                    'established': models.ALERT_SUCCESS,
-                }
-    return calculated
