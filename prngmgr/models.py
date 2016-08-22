@@ -1,12 +1,5 @@
 from django.db import models
 from django_handleref.models import HandleRefModel
-from django_inet.models import (
-    ASNField,
-    IPAddressField,
-    IPPrefixField,
-    MacAddressField,
-    URLField
-)
 from django_peeringdb.models.concrete import *
 from prngmgr.settings import *
 
@@ -15,6 +8,7 @@ ALERT_SUCCESS = 1
 ALERT_WARNING = 2
 ALERT_DANGER = 3
 
+
 class PeeringRouterBase(HandleRefModel):
     hostname = models.CharField(max_length=20, unique=True)
     class Meta:
@@ -22,14 +16,17 @@ class PeeringRouterBase(HandleRefModel):
     class HandleRef:
         tag = "prngrtr"
 
+
 class PeeringRouter(PeeringRouterBase):
     pass
+
 
 class PeeringRouterIXInterfaceBase(HandleRefModel):
     class Meta:
         abstract = True
     class HandleRef:
         tag = "prngrtriface"
+
 
 class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
     netixlan = models.OneToOneField(
@@ -38,6 +35,7 @@ class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
         limit_choices_to={'net__asn': MY_ASN}
     )
     prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
+
 
 class PeeringSessionBase(HandleRefModel):
 
@@ -118,6 +116,7 @@ class PeeringSessionBase(HandleRefModel):
     class HandleRef:
         tag = "prngsess"
 
+
 class PeeringSession(PeeringSessionBase):
 
     peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
@@ -143,3 +142,20 @@ class PeeringSession(PeeringSessionBase):
         else:
             return None
     get_remote_address = property(_get_remote_address)
+
+
+class PolicyBase(models.Model):
+    class Meta:
+        abstract = True
+    operational_name = models.CharField(max_length=20, unique=True)
+
+
+class ImportPolicyBase(PolicyBase):
+    class Meta:
+        abstract = True
+    pass
+
+class ExportPolicyBase(PolicyBase):
+    class Meta:
+        abstract = True
+    pass
