@@ -1,6 +1,4 @@
 import ipaddress
-from django.template import loader
-from prngmgr import models
 
 
 class Prefix(object):
