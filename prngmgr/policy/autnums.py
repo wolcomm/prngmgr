@@ -36,7 +36,7 @@ class AutNum(object):
             return True
 
     def __str__(self):
-        return self.autnum
+        return str(self.autnum)
 
     def __unicode__(self):
         return self.__str__()

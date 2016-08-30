@@ -3,13 +3,11 @@ import ipaddress
 
 class Prefix(object):
     def __init__(self, prefix=None, strict=False):
-        if isinstance(prefix, ipaddress.IPv4Network):
-            self._prefix = prefix
-        elif isinstance(prefix, ipaddress.IPv6Network):
+        if isinstance(prefix, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
             self._prefix = prefix
         else:
             try:
-                self._prefix = ipaddress.ip_network(prefix, strict=strict)
+                self._prefix = ipaddress.ip_network(unicode(prefix), strict=strict)
             except:
                 raise
 
@@ -19,8 +17,8 @@ class Prefix(object):
 
 
 class PrefixRange(Prefix):
-    def __init__(self, min_length=None, max_length=None, greedy=False, **kwargs):
-        super(PrefixRange, self).__init__(**kwargs)
+    def __init__(self, prefix=None, min_length=None, max_length=None, greedy=False, strict=False):
+        super(PrefixRange, self).__init__(prefix=prefix, strict=False)
         prefix_length = self.prefix.prefixlen
         if min_length is not None:
             if min_length > prefix_length:

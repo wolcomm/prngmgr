@@ -1,21 +1,47 @@
 import re
+from prngmgr.policy.autnums import AutNum
 
 _new_format_regex = re.compile(r'^(\d+):(\d+)$')
+
 
 class StdCommunity(object):
     def __init__(self, val=None):
         try:
             m = _new_format_regex.match(val)
             if m:
-                val = int(m.group(1)) * 2**16 + int(m.group(2))
+                a = int(m.group(1))
+                if not 0 <= a < 2**16:
+                    raise ValueError("ASN part of community should be a 16-bit integer")
+                n = int(m.group(2))
+                if not 0 <= n < 2**16:
+                    raise ValueError("Numeric part of community should be a 16-bit integer")
+                val = (a << 16) + n
         except TypeError:
             pass
         try:
             val = int(val)
         except:
             raise
-        # TODO: check whether 0:0 is valid?
-        if 0 < val < 2**32:
+        if 0 <= val < 2**32:
             self._val = val
         else:
             raise ValueError("Community should be a positive 32-bit integer")
+
+    @property
+    def value(self):
+        return self._val
+
+    @property
+    def as_part(self):
+        return self._val >> 16
+
+    @property
+    def num_part(self):
+        return self._val % 2**16
+
+    @property
+    def autnum(self):
+        return AutNum(self.as_part)
+
+    def __str__(self):
+        return "%s:%s" % (self.as_part, self.num_part)
