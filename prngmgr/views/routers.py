@@ -7,7 +7,8 @@ from django.http import (
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django_peeringdb.models.concrete import Network
-from prngmgr import settings, models, forms
+from prngmgr import settings, forms
+from prngmgr.models import models
 from prngmgr.views import utils
 
 me = Network.objects.get(asn=settings.MY_ASN)

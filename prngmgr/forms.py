@@ -9,7 +9,7 @@ from django.forms.widgets import (
     TextInput,
     HiddenInput,
 )
-from prngmgr.models import *
+from prngmgr.models.models import *
 from prngmgr.settings import *
 
 class NetworkIXLanHiddenWidget(TextInput):

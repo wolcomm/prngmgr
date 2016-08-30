@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django_peeringdb.models.concrete import Network
-from prngmgr import settings, models
+from prngmgr import settings
+from prngmgr.models import models
 
 me = Network.objects.get(asn=settings.MY_ASN)
 

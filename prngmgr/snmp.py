@@ -1,6 +1,6 @@
 from pysnmp.hlapi import *
 from prngmgr.settings import *
-from prngmgr.models import *
+from prngmgr.models.models import *
 from collections import defaultdict
 from ipaddress import *
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from prngmgr.settings import *
-from prngmgr.models import *
+from prngmgr.models.models import *
 
 class Command(BaseCommand):
     help = 'Displays infomation from our PDB record'

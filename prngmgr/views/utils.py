@@ -1,4 +1,4 @@
-from prngmgr import models
+from prngmgr.models import models
 
 
 def render_alerts(calculated):

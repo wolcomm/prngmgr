@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 from collections import Counter
 from prngmgr.settings import *
-from prngmgr.models import *
+from prngmgr.models.models import *
 from prngmgr.snmp import *
 
 class Command(BaseCommand):
     help = 'Queries peering routers for BGP related SNMP data'
+
     def add_arguments(self, parser):
         parser.add_argument(
             '--router',

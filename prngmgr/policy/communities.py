@@ -1,4 +1,5 @@
 import re
+import collections
 from prngmgr.policy.autnums import AutNum
 
 _new_format_regex = re.compile(r'^(\d+):(\d+)$')
@@ -45,3 +46,22 @@ class StdCommunity(object):
 
     def __str__(self):
         return "%s:%s" % (self.as_part, self.num_part)
+
+
+class StdCommunitySet(object):
+    def __init__(self, name=None, communities=[]):
+        self._communities = []
+        for comm in communities:
+            if not isinstance(comm, StdCommunity):
+                try:
+                    self._communities.append(StdCommunity(val=comm))
+                except:
+                    raise
+            else:
+                self._communities.append(comm)
+
+    def append(self, comm=None):
+        if isinstance(comm, StdCommunity):
+            self._communities.append(comm)
+        else:
+            raise ValueError
