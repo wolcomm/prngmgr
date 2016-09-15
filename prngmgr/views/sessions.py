@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings
 from prngmgr.models import models
@@ -8,6 +9,7 @@ from prngmgr.models import models
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
+@login_required
 def sessions(request, filter_field, filter_arg):
     template = loader.get_template('prngmgr/table.html')
     context = {

@@ -6,6 +6,7 @@ from django.http import (
 )
 from django.template import loader
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings, forms
 from prngmgr.models import models
@@ -14,6 +15,7 @@ from prngmgr.views import utils
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
+@login_required
 def routers(request, rtr_id):
     context = {
         'view': {

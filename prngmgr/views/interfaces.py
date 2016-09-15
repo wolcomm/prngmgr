@@ -4,6 +4,7 @@ from django.http import (
     HttpResponseNotAllowed,
 )
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings, forms
 from prngmgr.models import models
@@ -11,6 +12,7 @@ from prngmgr.models import models
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
+@login_required
 def interfaces(request, if_id, if_delete):
     if request.method == 'POST':
         if if_id:
