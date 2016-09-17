@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
             # collect cbgpPeer2Table via SNMP
             self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
-            bgptable = GetBGPTable(rtr.hostname)
+            bgptable = get_bgp_table(rtr.hostname)
 
             # get all PeeringRouterIXInterfaces on router
             ifaces = PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
