@@ -39,8 +39,8 @@ def get_bgp_table(host):
                     results[addr][name] = val
     for addr in results:
         if results[addr]['cbgpPeer2Type'] == 1:
-            results[addr]['cbgpPeer2RemoteAddr'] = ipaddress.IPv4Network(int(addr, 16))
-        if results[addr]['cbgpPeer2Type'] == 2:
+            results[addr]['cbgpPeer2RemoteAddr'] = ipaddress.IPv4Address(int(addr, 16))
+        elif results[addr]['cbgpPeer2Type'] == 2:
             results[addr]['cbgpPeer2RemoteAddr'] = ipaddress.IPv6Address(int(addr, 16))
     return results
 
