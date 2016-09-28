@@ -1,3 +1,4 @@
 django-peeringdb
 ipaddress
 pysnmp
+djangorestframework

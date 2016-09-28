@@ -1,7 +1,7 @@
 from django.db import models
 from django_handleref.models import HandleRefModel
 from django_peeringdb.models.concrete import *
-from prngmgr.settings import *
+from prngmgr import settings
 
 ALERT_NONE = 0
 ALERT_SUCCESS = 1
@@ -11,8 +11,10 @@ ALERT_DANGER = 3
 
 class PeeringRouterBase(HandleRefModel):
     hostname = models.CharField(max_length=20, unique=True)
+
     class Meta:
         abstract = True
+
     class HandleRef:
         tag = "prngrtr"
 
@@ -24,6 +26,7 @@ class PeeringRouter(PeeringRouterBase):
 class PeeringRouterIXInterfaceBase(HandleRefModel):
     class Meta:
         abstract = True
+
     class HandleRef:
         tag = "prngrtriface"
 
@@ -32,7 +35,7 @@ class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
     netixlan = models.OneToOneField(
         NetworkIXLan,
         default=0, related_name="+", null=True,
-        limit_choices_to={'net__asn': MY_ASN}
+        limit_choices_to={'net__asn': settings.MY_ASN}
     )
     prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
 
@@ -48,6 +51,7 @@ class PeeringSessionBase(HandleRefModel):
         (PROV_COMPLETE, 'complete'),
     )
     provisioning_state = models.IntegerField(choices=PROV_OPTIONS, default=PROV_NONE)
+
     def _get_provisioning_state_alert(self):
         if self.provisioning_state == self.PROV_COMPLETE:
             return ALERT_SUCCESS
@@ -66,6 +70,7 @@ class PeeringSessionBase(HandleRefModel):
         (ADMIN_START, 'start'),
     )
     admin_state = models.IntegerField(choices=ADMIN_OPTIONS, default=ADMIN_NONE)
+
     def _get_admin_state_alert(self):
         if self.admin_state == self.ADMIN_START:
             return ALERT_SUCCESS
@@ -92,6 +97,7 @@ class PeeringSessionBase(HandleRefModel):
         (OPER_ESTABLISHED, "established"),
     )
     operational_state = models.IntegerField(choices=OPER_OPTIONS, default=OPER_NONE)
+
     def _get_operational_state_alert(self):
         if self.operational_state == self.OPER_ESTABLISHED:
             return ALERT_SUCCESS
@@ -113,6 +119,7 @@ class PeeringSessionBase(HandleRefModel):
 
     class Meta:
         abstract = True
+
     class HandleRef:
         tag = "prngsess"
 
