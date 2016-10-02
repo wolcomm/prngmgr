@@ -1,7 +1,9 @@
-from django.views.generic import View, TemplateView
-from django.http import HttpResponse, JsonResponse
+from django.views.generic import TemplateView
+from django.http import HttpResponse
 from django.template import loader
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse_lazy
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings
 from prngmgr.models import models
@@ -10,12 +12,31 @@ from prngmgr.views import utils
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
-@login_required
 class NetworksView(TemplateView):
-    template_name = 'prngmgr/table.html'
+    template_name = 'prngmgr/ajax_table.html'
+    view = 'net'
+    api = reverse_lazy('network-datatable')
+    table = {
+        'name': 'networks',
+        'title': 'Peering Networks',
+        'cols': [
+            {'title': 'Network Name'},
+            {'title': 'Primary ASN'},
+            {'title': 'IRR Record'},
+            {'title': 'Looking Glass'},
+            {'title': 'Peering Policy'},
+            {'title': 'Possible Sessions'},
+            {'title': 'Provisioned Sessions'},
+            {'title': 'Established Sessions'},
+        ],
+    }
 
     def get_context_data(self, **kwargs):
-        return {}
+        context = super(NetworksView, self).get_context_data(**kwargs)
+        context['view'] = self.view
+        context['api'] = self.api
+        context['table'] = self.table
+        return context
 
 
 @login_required
