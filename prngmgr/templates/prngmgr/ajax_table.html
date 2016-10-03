@@ -5,10 +5,6 @@
 {% block scripts %}
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
-{#            $('#{{ table.name }} tfoot th').each( function () {#}
-{#                var title = $(this).text();#}
-{#                $(this).html('<input type="text" class="form-control" placeholder="search"/>');#}
-{#            });#}
             var table = $('#{{ table.name }}');
             var data_table;
             var table_def = $.getJSON("{{ columns }}");
@@ -18,19 +14,13 @@
                     "serverSide": true,
                     "ajax": "{{ api }}",
                     "searching": true,
-                    "columns": columns
+                    "columns": columns,
+                    "responsive": true,
+                    "drawCallback": function ( settings ) {
+                        data_table.responsive.recalc();
+                    }
                 })
             });
-{#            table.columns().every( function () {#}
-{#                var that = this;#}
-{#                $('input', that.footer()).on('keyup change', function () {#}
-{#                    console.log("input value:" + this.value);#}
-{#                    console.log("column search:" + that.search());#}
-{#                    if (that.search() != this.value) {#}
-{#                        that.search(this.value).draw();#}
-{#                    }#}
-{#                })#}
-{#            })#}
         });
     </script>
 {% endblock %}
@@ -40,7 +30,7 @@
         <div class="panel-heading">
             <h1 class="panel-title text-center">{{ table.title }}</h1>
         </div>
-        <table id="{{ table.name }}" class="table table-hover" cellspacing="0" width="100%">
+        <table id="{{ table.name }}" class="table table-hover nowrap" cellspacing="0" width="100%">
             <thead></thead>
         </table>
     </div>

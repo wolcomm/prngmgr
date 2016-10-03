@@ -79,6 +79,10 @@ class PeeringRouterIXInterfaceSerializer(serializers.HyperlinkedModelSerializer)
 
 
 class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
+    provisioning_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.PROV_OPTIONS)
+    admin_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.ADMIN_OPTIONS)
+    operational_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.OPER_OPTIONS)
+    af = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.AF_OPTIONS)
     local_address = IPAddressField()
     remote_address = IPAddressField()
 
