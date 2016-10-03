@@ -26,6 +26,10 @@ class IndexView(TemplateView):
 class NetworksView(TemplateView):
     template_name = 'prngmgr/ajax_table.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NetworksView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(NetworksView, self).get_context_data(**kwargs)
         context['columns'] = reverse_lazy('network-tabledef')
@@ -40,6 +44,10 @@ class NetworksView(TemplateView):
 class InternetExchangeView(TemplateView):
     template_name = 'prngmgr/ajax_table.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(InternetExchangeView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(InternetExchangeView, self).get_context_data(**kwargs)
         context['columns'] = reverse_lazy('internetexchange-tabledef')
@@ -53,6 +61,10 @@ class InternetExchangeView(TemplateView):
 
 class PeeringSessionsView(TemplateView):
     template_name = 'prngmgr/ajax_table.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PeeringSessionsView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PeeringSessionsView, self).get_context_data(**kwargs)
