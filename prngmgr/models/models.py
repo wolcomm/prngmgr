@@ -140,6 +140,7 @@ class PeeringSession(PeeringSessionBase):
         else:
             return None
     get_local_address = property(_get_local_address)
+    local_address = property(_get_local_address)
 
     def _get_remote_address(self):
         if self.af == 1:
@@ -149,6 +150,23 @@ class PeeringSession(PeeringSessionBase):
         else:
             return None
     get_remote_address = property(_get_remote_address)
+    remote_address = property(_get_remote_address)
+
+    def _ixp_name(self):
+        return self.prngrtriface.netixlan.ixlan.ix.name
+    ixp_name = property(_ixp_name)
+
+    def _router_hostname(self):
+        return self.prngrtriface.prngrtr.hostname
+    router_hostname = property(_router_hostname)
+
+    def _remote_network_name(self):
+        return self.peer_netixlan.net.name
+    remote_network_name = property(_remote_network_name)
+
+    def _remote_network_asn(self):
+        return self.peer_netixlan.asn
+    remote_network_asn = property(_remote_network_asn)
 
 
 class PolicyBase(models.Model):

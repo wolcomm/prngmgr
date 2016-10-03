@@ -1,21 +1,15 @@
-from django.views.generic import View, TemplateView
-from django.http import HttpResponse, JsonResponse
+from django.views.generic import TemplateView
+from django.http import HttpResponse
 from django.template import loader
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse_lazy
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings
 from prngmgr.models import models
 from prngmgr.views import utils
 
 me = Network.objects.get(asn=settings.MY_ASN)
-
-
-@login_required
-class NetworksView(TemplateView):
-    template_name = 'prngmgr/table.html'
-
-    def get_context_data(self, **kwargs):
-        return {}
 
 
 @login_required
