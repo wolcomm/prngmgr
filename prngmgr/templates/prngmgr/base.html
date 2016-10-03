@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Peering Manager{% endblock %}</title>
+    <meta name="description" content="Peering Manager"/>
+    <link rel="icon" href="{% static 'img/favicon.ico' %}"/>
     {% include "prngmgr/css.html" %}
     {% block links %}{% endblock %}
     {% include "prngmgr/js.html" %}
