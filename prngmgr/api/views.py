@@ -9,16 +9,19 @@ from prngmgr.api import serializers, datatables
 class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.Organization.objects.all()
     serializer_class = serializers.OrganizationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacilityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.Facility.objects.all()
     serializer_class = serializers.FacilitySerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class NetworkProxyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = prngmgr_models.NetworkProxy.objects.all()
     serializer_class = serializers.NetworkSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route()
     def datatable(self, request, *args, **kwargs):
@@ -71,6 +74,7 @@ class NetworkProxyViewSet(viewsets.ReadOnlyModelViewSet):
 class InternetExchangeProxyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = prngmgr_models.InternetExchangeProxy.objects.all()
     serializer_class = serializers.InternetExchangeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route()
     def datatable(self, request, *args, **kwargs):
@@ -123,31 +127,37 @@ class InternetExchangeProxyViewSet(viewsets.ReadOnlyModelViewSet):
 class InternetExchangeFacilityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.InternetExchangeFacility.objects.all()
     serializer_class = serializers.InternetExchangeFacilitySerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class IXLanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.IXLan.objects.all()
     serializer_class = serializers.IXLanSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class IXLanPrefixViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.IXLanPrefix.objects.all()
     serializer_class = serializers.IXLanPrefixSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class NetworkContactViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.NetworkContact.objects.all()
     serializer_class = serializers.NetworkContactSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class NetworkFacilityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.NetworkFacility.objects.all()
     serializer_class = serializers.NetworkFacilitySerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class NetworkIXLanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = pdb_models.NetworkIXLan.objects.all()
     serializer_class = serializers.NetworkIXLanSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class PeeringRouterViewSet(viewsets.ModelViewSet):
