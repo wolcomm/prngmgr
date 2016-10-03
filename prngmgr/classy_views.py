@@ -12,14 +12,6 @@ from prngmgr.views import utils
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
-class LoginView(TemplateView):
-    template_name = 'prngmgr/login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
-        return context
-
-
 class IndexView(TemplateView):
     template_name = 'prngmgr/index.html'
 
