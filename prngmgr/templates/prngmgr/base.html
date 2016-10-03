@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    {% include "prngmgr/navbar.html" %}
+    {% block navbar %}{% include "prngmgr/navbar.html" %}{% endblock %}
     <div class="container">
         <div class="base" id="content">
             {% block content %}{% endblock %}

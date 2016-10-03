@@ -12,15 +12,25 @@ from prngmgr.views import utils
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
+class LoginView(TemplateView):
+    template_name = 'prngmgr/login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        return context
+
+
 class IndexView(TemplateView):
     template_name = 'prngmgr/index.html'
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='/auth/login/'))
     def dispatch(self, *args, **kwargs):
         return super(IndexView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        return {'me': me}
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['me'] = me
+        return context
 
 
 class NetworksView(TemplateView):
