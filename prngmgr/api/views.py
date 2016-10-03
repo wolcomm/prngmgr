@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
@@ -76,8 +77,8 @@ class InternetExchangeViewSet(viewsets.ReadOnlyModelViewSet):
     def datatable(self, request, *args, **kwargs):
         query_params = datatables.QueryParams(request)
         query = datatables.QueryView(
-            query_set=self.queryset,
-            serializer_class=self.serializer_class,
+            query_set=self.queryset.annotate(participants=Count('ixlan_set__netixlan_set__asn', distinct=True)),
+            serializer_class=serializers.AnnotatedInternetExchangeSerializer,
             query_params=query_params
         )
         return query.response
@@ -96,9 +97,9 @@ class InternetExchangeViewSet(viewsets.ReadOnlyModelViewSet):
              'data': 'region_continent',
              'name': 'region_continent'},
             {'title': 'Participants',
-             'data': None,
+             'data': 'participants',
              'name': 'participants',
-             'defaultContent': 0,
+             'orderable': True,
              'searchable': False},
             {'title': 'Possible Sessions',
              'data': None,

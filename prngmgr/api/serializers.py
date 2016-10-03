@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import serializers
 from django_countries.serializer_fields import CountryField
 from django_inet.rest import IPAddressField
@@ -26,9 +27,14 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 
 class InternetExchangeSerializer(serializers.HyperlinkedModelSerializer):
     country = CountryField()
+    # participants = serializers.IntegerField()
 
     class Meta:
         model = pdb_models.InternetExchange
+
+
+class AnnotatedInternetExchangeSerializer(InternetExchangeSerializer):
+    participants = serializers.IntegerField()
 
 
 class InternetExchangeFacilitySerializer(serializers.HyperlinkedModelSerializer):
