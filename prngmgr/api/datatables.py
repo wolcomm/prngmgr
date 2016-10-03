@@ -7,6 +7,17 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 
+class TableDefView(object):
+    def __init__(self, columns=None):
+        if not isinstance(columns, list):
+            raise TypeError("%s should be a list of column definitions")
+        self._response = Response(columns)
+
+    @property
+    def response(self):
+        return self._response
+
+
 class QueryView(object):
     def __init__(self, query_set=None, serializer_class=None, query_params=None):
         if not isinstance(query_params, QueryParams):

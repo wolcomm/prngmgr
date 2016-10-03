@@ -12,33 +12,6 @@ from prngmgr.views import utils
 me = Network.objects.get(asn=settings.MY_ASN)
 
 
-class NetworksView(TemplateView):
-    template_name = 'prngmgr/ajax_table.html'
-    view = 'net'
-    api = reverse_lazy('network-datatable')
-    table = {
-        'name': 'networks',
-        'title': 'Peering Networks',
-        'cols': [
-            {'title': 'Network Name'},
-            {'title': 'Primary ASN'},
-            {'title': 'IRR Record'},
-            {'title': 'Looking Glass'},
-            {'title': 'Peering Policy'},
-            {'title': 'Possible Sessions'},
-            {'title': 'Provisioned Sessions'},
-            {'title': 'Established Sessions'},
-        ],
-    }
-
-    def get_context_data(self, **kwargs):
-        context = super(NetworksView, self).get_context_data(**kwargs)
-        context['view'] = self.view
-        context['api'] = self.api
-        context['table'] = self.table
-        return context
-
-
 @login_required
 def networks(request, net_id):
     template = loader.get_template('prngmgr/table.html')

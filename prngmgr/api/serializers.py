@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django_countries.serializer_fields import CountryField
+from django_inet.rest import IPAddressField
 from django_peeringdb.models import concrete as pdb_models
 from prngmgr import models as prngmgr_models
 
@@ -71,5 +72,11 @@ class PeeringRouterIXInterfaceSerializer(serializers.HyperlinkedModelSerializer)
 
 
 class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
+    local_address = IPAddressField()
+    remote_address = IPAddressField()
+
     class Meta:
         model = prngmgr_models.PeeringSession
+        fields = ('provisioning_state', 'admin_state', 'operational_state',
+                  'af', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
+                  'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn')

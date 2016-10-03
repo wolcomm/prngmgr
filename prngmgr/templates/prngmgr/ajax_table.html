@@ -9,21 +9,17 @@
 {#                var title = $(this).text();#}
 {#                $(this).html('<input type="text" class="form-control" placeholder="search"/>');#}
 {#            });#}
-            var table = $('#{{ table.name }}').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": "{{ api }}",
-                "searching": true,
-                "columns": [
-                    {"data": "name", "name": "name"},
-                    {"data": "asn", "name": "asn"},
-                    {"data": "irr_as_set", "name": "irr_as_set"},
-                    {"data": "looking_glass", "name": "looking_glass"},
-                    {"data": "policy_general", "name": "policy_general"},
-                    {"data": null, "name": "possible", "defaultContent": 0, "searchable": false},
-                    {"data": null, "name": "provisioned", "defaultContent": 0, "searchable": false},
-                    {"data": null, "name": "established", "defaultContent": 0, "searchable": false}
-                ]
+            var table = $('#{{ table.name }}');
+            var data_table;
+            var table_def = $.getJSON("{{ columns }}");
+            table_def.done( function (columns) {
+                data_table = table.DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": "{{ api }}",
+                    "searching": true,
+                    "columns": columns
+                })
             });
 {#            table.columns().every( function () {#}
 {#                var that = this;#}
@@ -45,20 +41,7 @@
             <h1 class="panel-title text-center">{{ table.title }}</h1>
         </div>
         <table id="{{ table.name }}" class="table table-hover" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    {% for col in table.cols %}
-                        <th>{{ col.title }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tfoot>
-                <tr>
-                    {% for col in table.cols %}
-                        <th>{{ col.title }}</th>
-                    {% endfor %}
-                </tr>
-            </tfoot>
+            <thead></thead>
         </table>
     </div>
 {% endblock %}
