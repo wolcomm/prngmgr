@@ -1,1 +1,2 @@
-from .models import PeeringRouter, PeeringRouterIXInterface, PeeringSession
+from .models import PeeringRouter, PeeringRouterIXInterface,\
+    PeeringSession, InternetExchangeProxy, NetworkProxy

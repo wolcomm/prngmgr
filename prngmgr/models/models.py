@@ -185,3 +185,61 @@ class ExportPolicyBase(PolicyBase):
     class Meta:
         abstract = True
     pass
+
+
+class InternetExchangeProxyManager(models.Manager):
+    def get_queryset(self):
+        query_set = super(InternetExchangeProxyManager, self).get_queryset()
+        return query_set.annotate(
+            participants=models.Count('ixlan_set__netixlan_set__asn', distinct=True)
+        )
+
+
+class InternetExchangeProxy(InternetExchange):
+    class Meta:
+        proxy = True
+
+    objects = InternetExchangeProxyManager()
+
+    def _local_sessions(self):
+        return PeeringSession.objects.filter(peer_netixlan__ixlan__ix=self.id)
+
+    def _possible_sessions(self):
+        return self._local_sessions().count()
+    possible_sessions = property(_possible_sessions)
+
+    def _provisioned_sessions(self):
+        return self._local_sessions().filter(provisioning_state=PeeringSession.PROV_COMPLETE).count()
+    provisioned_sessions = property(_provisioned_sessions)
+
+    def _established_sessions(self):
+        return self._local_sessions().filter(operational_state=PeeringSession.OPER_ESTABLISHED).count()
+    established_sessions = property(_established_sessions)
+
+
+class NetworkProxyManager(models.Manager):
+    def get_queryset(self):
+        query_set = super(NetworkProxyManager, self).get_queryset()
+        return query_set
+
+
+class NetworkProxy(Network):
+    class Meta:
+        proxy = True
+
+    objects = NetworkProxyManager()
+
+    def _local_sessions(self):
+        return PeeringSession.objects.filter(peer_netixlan__net=self.id)
+
+    def _possible_sessions(self):
+        return self._local_sessions().count()
+    possible_sessions = property(_possible_sessions)
+
+    def _provisioned_sessions(self):
+        return self._local_sessions().filter(provisioning_state=PeeringSession.PROV_COMPLETE).count()
+    provisioned_sessions = property(_provisioned_sessions)
+
+    def _established_sessions(self):
+        return self._local_sessions().filter(operational_state=PeeringSession.OPER_ESTABLISHED).count()
+    established_sessions = property(_established_sessions)

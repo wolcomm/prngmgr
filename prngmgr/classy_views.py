@@ -34,8 +34,8 @@ class NetworksView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NetworksView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('network-tabledef')
-        context['api'] = reverse_lazy('network-datatable')
+        context['columns'] = reverse_lazy('networkproxy-tabledef')
+        context['api'] = reverse_lazy('networkproxy-datatable')
         context['table'] = {
             'name': 'networks',
             'title': 'Peering Networks',
@@ -52,8 +52,8 @@ class InternetExchangeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(InternetExchangeView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('internetexchange-tabledef')
-        context['api'] = reverse_lazy('internetexchange-datatable')
+        context['columns'] = reverse_lazy('internetexchangeproxy-tabledef')
+        context['api'] = reverse_lazy('internetexchangeproxy-datatable')
         context['table'] = {
             'name': 'ixps',
             'title': 'Internet Exchange Points',

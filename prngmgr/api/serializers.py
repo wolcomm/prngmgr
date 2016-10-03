@@ -22,19 +22,20 @@ class FacilitySerializer(serializers.HyperlinkedModelSerializer):
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = pdb_models.Network
+        model = prngmgr_models.NetworkProxy
+        fields = ('name', 'asn', 'irr_as_set', 'looking_glass', 'policy_general',
+                  'possible_sessions', 'provisioned_sessions', 'established_sessions')
 
 
 class InternetExchangeSerializer(serializers.HyperlinkedModelSerializer):
     country = CountryField()
-    # participants = serializers.IntegerField()
+    participants = serializers.IntegerField()
 
     class Meta:
-        model = pdb_models.InternetExchange
-
-
-class AnnotatedInternetExchangeSerializer(InternetExchangeSerializer):
-    participants = serializers.IntegerField()
+        model = prngmgr_models.InternetExchangeProxy
+        fields = ('name', 'country', 'region_continent', 'participants',
+                  'possible_sessions', 'provisioned_sessions', 'established_sessions',
+                  'name_long', 'city', 'notes')
 
 
 class InternetExchangeFacilitySerializer(serializers.HyperlinkedModelSerializer):

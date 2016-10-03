@@ -1,4 +1,3 @@
-from django.db.models import Count
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
@@ -17,8 +16,8 @@ class FacilityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.FacilitySerializer
 
 
-class NetworkViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = pdb_models.Network.objects.all()
+class NetworkProxyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = prngmgr_models.NetworkProxy.objects.all()
     serializer_class = serializers.NetworkSerializer
 
     @list_route()
@@ -50,35 +49,35 @@ class NetworkViewSet(viewsets.ReadOnlyModelViewSet):
              'data': 'policy_general',
              'name': 'policy_general'},
             {'title': 'Possible Sessions',
-             'data': None,
-             'name': 'possible',
-             'defaultContent': 0,
+             'data': 'possible_sessions',
+             'name': 'possible_sessions',
+             'orderable': False,
              'searchable': False},
             {'title': 'Provisioned Sessions',
-             'data': None,
-             'name': 'provisioned',
-             'defaultContent': 0,
+             'data': 'provisioned_sessions',
+             'name': 'provisioned_sessions',
+             'orderable': False,
              'searchable': False},
             {'title': 'Established Sessions',
-             'data': None,
-             'name': 'possible',
-             'defaultContent': 0,
+             'data': 'established_sessions',
+             'name': 'established_sessions',
+             'orderable': False,
              'searchable': False},
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response
 
 
-class InternetExchangeViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = pdb_models.InternetExchange.objects.all()
+class InternetExchangeProxyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = prngmgr_models.InternetExchangeProxy.objects.all()
     serializer_class = serializers.InternetExchangeSerializer
 
     @list_route()
     def datatable(self, request, *args, **kwargs):
         query_params = datatables.QueryParams(request)
         query = datatables.QueryView(
-            query_set=self.queryset.annotate(participants=Count('ixlan_set__netixlan_set__asn', distinct=True)),
-            serializer_class=serializers.AnnotatedInternetExchangeSerializer,
+            query_set=self.queryset,
+            serializer_class=self.serializer_class,
             query_params=query_params
         )
         return query.response
@@ -102,19 +101,19 @@ class InternetExchangeViewSet(viewsets.ReadOnlyModelViewSet):
              'orderable': True,
              'searchable': False},
             {'title': 'Possible Sessions',
-             'data': None,
-             'name': 'possible',
-             'defaultContent': 0,
+             'data': 'possible_sessions',
+             'name': 'possible_sessions',
+             'orderable': False,
              'searchable': False},
             {'title': 'Provisioned Sessions',
-             'data': None,
-             'name': 'provisioned',
-             'defaultContent': 0,
+             'data': 'provisioned_sessions',
+             'name': 'provisioned_sessions',
+             'orderable': False,
              'searchable': False},
             {'title': 'Established Sessions',
-             'data': None,
-             'name': 'possible',
-             'defaultContent': 0,
+             'data': 'established_sessions',
+             'name': 'established_sessions',
+             'orderable': False,
              'searchable': False},
         ]
         definition = datatables.TableDefView(columns=columns)
