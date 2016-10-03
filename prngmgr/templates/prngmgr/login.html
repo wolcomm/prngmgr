@@ -1,39 +1,55 @@
 {% extends "prngmgr/base.html" %}
+{% load staticfiles %}
 
 {% block title %}{% endblock %}
 
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready( function () {
+            $('#login-controls label').each( function () {
+                $(this).addClass("sr-only");
+            });
+            $('#login-controls input').each( function () {
+                var ph = $(this).attr("name");
+                $(this)
+                        .addClass("form-control")
+                        .attr("placeholder", ph);
+            })
+        })
+    </script>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
 {% block content %}
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h1 class="panel-title text-center">Please Login</h1>
-        </div>
-        <div class="panel-body">
-            {% if form.errors %}
-                <p>Your username and password didn't match. Please try again.</p>
+    <img src="{% static 'img/logo.jpg' %}" class="img-responsive center-block"/>
+    <h2 class="form-login-heading text-center">Please Login to Peering Manager</h2>
+    <form class="form-login" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Login error!</strong> Your username and password didn't match. Please try again.
+            </div>
+        {% endif %}
+        {% if next %}
+            {% if user.is_authenticated %}
+                <div class="alert alert-danger">
+                    <strong>Login error!</strong> Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.
+                </div>
             {% endif %}
-            {% if next %}
-                {% if user.is_authenticated %}
-                    <p>Your account doesn't have access to this page. To proceed,
-                        please login with an account that has access.</p>
-                {% else %}
-                    <p>Please login to see this page.</p>
-                {% endif %}
-            {% endif %}
-            <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td>{{ form.username.label_tag }}</td>
-                        <td>{{ form.username }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ form.password.label_tag }}</td>
-                        <td>{{ form.password }}</td>
-                    </tr>
-                </table>
-                <input type="submit" value="login"/>
-                <input type="hidden" name="next" value="{{ next }}"/>
-            </form>
-        </div>
-    </div>
+        {% endif %}
+            <div id="login-controls" class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Login"/>
+        <input type="hidden" name="next" value="{{ next }}"/>
+    </form>
 {% endblock %}

@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Peering Manager{% endblock %}</title>
     {% include "prngmgr/css.html" %}
+    {% block links %}{% endblock %}
     {% include "prngmgr/js.html" %}
     {% block scripts %}{% endblock %}
 </head>
 
 <body>
     {% block navbar %}{% include "prngmgr/navbar.html" %}{% endblock %}
-    <div class="container">
+    <div class="container-fluid">
         <div class="base" id="content">
             {% block content %}{% endblock %}
         </div>
