@@ -82,12 +82,31 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
     provisioning_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.PROV_OPTIONS)
     admin_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.ADMIN_OPTIONS)
     operational_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.OPER_OPTIONS)
+    session_state = serializers.SerializerMethodField()
     af = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.AF_OPTIONS)
+    address_family = serializers.SerializerMethodField()
     local_address = IPAddressField()
     remote_address = IPAddressField()
 
+    def get_session_state(self, obj):
+        if obj.provisioning_state == 2:
+            if obj.admin_state == 2:
+                if obj.operational_state == 6:
+                    return {'state': 4, 'display': 'Up', 'class': 'success'}
+                else:
+                    return {'state': 3, 'display': 'Down', 'class': 'danger'}
+            else:
+                return {'state': 2, 'display': 'Admin Down', 'class': 'warning'}
+        elif obj.provisioning_state == 1:
+            return {'state': 1, 'display': 'Provisioning', 'class': 'info'}
+        else:
+            return {'state': 0, 'display': 'None'}
+
+    def get_address_family(self, obj):
+        return obj.get_af_display()
+
     class Meta:
         model = prngmgr_models.PeeringSession
-        fields = ('provisioning_state', 'admin_state', 'operational_state',
-                  'af', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
+        fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'af',
+                  'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
                   'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn')

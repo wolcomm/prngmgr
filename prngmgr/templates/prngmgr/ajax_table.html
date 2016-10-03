@@ -14,10 +14,18 @@
                     "serverSide": true,
                     "ajax": "{{ api }}",
                     "searching": true,
+                    "pageLength": 25,
                     "columns": columns,
                     "responsive": true,
                     "drawCallback": function ( settings ) {
                         data_table.responsive.recalc();
+                    },
+                    "rowCallback": function (row, data, index) {
+                        if (data.session_state) {
+                            if (data.session_state.state) {
+                                $( row ).addClass(data.session_state.class);
+                            }
+                        }
                     }
                 })
             });
