@@ -40,7 +40,7 @@ class QueryView(object):
                     if query['columns'][col_index]['searchable']:
                         filter_cols.append(query['columns'][col_index]['name'])
                 for col in filter_cols:
-                    filter_query |= Q(**{"%s__contains" % col: filter_value})
+                    filter_query |= Q(**{"%s__icontains" % col: filter_value})
             filtered = base.filter(filter_query)
             records_filtered = filtered.count()
             order_by_columns = list()
