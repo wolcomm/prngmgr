@@ -23,7 +23,7 @@ setup(
     packages=find_packages(
         include=[
             'prngmgr',
-            'prngmgr.*'
+            'prngmgr.*',
             'test'
         ],
         exclude=[

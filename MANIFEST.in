@@ -7,4 +7,5 @@ recursive-include packaging *.txt
 recursive-include prngmgr/templates *.html
 recursive-include prngmgr/static/css *.css
 recursive-include prngmgr/static/js *.js
+recursive-include prngmgr/static/img *.jpg *.ico
 exclude prngmgr/local_settings.py
