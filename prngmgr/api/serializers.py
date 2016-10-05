@@ -85,6 +85,10 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
     address_family = serializers.CharField()
     local_address = IPAddressField()
     remote_address = IPAddressField()
+    ixp_name = serializers.CharField()
+    router_hostname = serializers.CharField()
+    remote_network_name = serializers.CharField()
+    remote_network_asn = serializers.IntegerField()
 
     def get_session_state(self, obj):
         if obj.provisioning_state == 2:

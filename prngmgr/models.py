@@ -1,5 +1,6 @@
 from django.db import models
 from django_handleref.models import HandleRefModel
+from django_inet.models import IPAddressField
 from django_peeringdb.models.concrete import *
 from prngmgr import settings
 
@@ -142,6 +143,18 @@ class PeeringSessionManager(models.Manager):
     def get_queryset(self):
         base_query_set = super(PeeringSessionManager, self).get_queryset()
         query_set = base_query_set.annotate(
+            local_address=models.Case(
+                models.When(af=1, then=models.F('prngrtriface__netixlan__ipaddr4')),
+                models.When(af=2, then=models.F('prngrtriface__netixlan__ipaddr6')),
+                default=None,
+                output_field=IPAddressField()
+            ),
+            remote_address=models.Case(
+                models.When(af=1, then=models.F('peer_netixlan__ipaddr4')),
+                models.When(af=2, then=models.F('peer_netixlan__ipaddr6')),
+                default=None,
+                output_field=IPAddressField()
+            ),
             address_family=models.Case(
                 models.When(af=1, then=models.Value('IPv4')),
                 models.When(af=2, then=models.Value('IPv6')),
@@ -159,7 +172,11 @@ class PeeringSessionManager(models.Manager):
                 models.When(provisioning_state=1, then=models.Value('Provisioning')),
                 default=models.Value('None'),
                 output_field=models.CharField()
-            )
+            ),
+            ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
+            router_hostname=models.F('prngrtriface__prngrtr__hostname'),
+            remote_network_name = models.F('peer_netixlan__net__name'),
+            remote_network_asn = models.F('peer_netixlan__net__asn')
         )
         return query_set
 
@@ -174,41 +191,21 @@ class PeeringSession(PeeringSessionBase):
     class Meta:
         unique_together = ("af", "prngrtriface", "peer_netixlan")
 
-    def _get_local_address(self):
-        if self.af == 1:
-            return self.prngrtriface.netixlan.ipaddr4
-        elif self.af == 2:
-            return self.prngrtriface.netixlan.ipaddr6
-        else:
-            return None
-    get_local_address = property(_get_local_address)
-    local_address = property(_get_local_address)
-
-    def _get_remote_address(self):
-        if self.af == 1:
-            return self.peer_netixlan.ipaddr4
-        elif self.af == 2:
-            return self.peer_netixlan.ipaddr6
-        else:
-            return None
-    get_remote_address = property(_get_remote_address)
-    remote_address = property(_get_remote_address)
-
-    def _ixp_name(self):
-        return self.prngrtriface.netixlan.ixlan.ix.name
-    ixp_name = property(_ixp_name)
-
-    def _router_hostname(self):
-        return self.prngrtriface.prngrtr.hostname
-    router_hostname = property(_router_hostname)
-
-    def _remote_network_name(self):
-        return self.peer_netixlan.net.name
-    remote_network_name = property(_remote_network_name)
-
-    def _remote_network_asn(self):
-        return self.peer_netixlan.asn
-    remote_network_asn = property(_remote_network_asn)
+    # def _ixp_name(self):
+    #     return self.prngrtriface.netixlan.ixlan.ix.name
+    # ixp_name = property(_ixp_name)
+    #
+    # def _router_hostname(self):
+    #     return self.prngrtriface.prngrtr.hostname
+    # router_hostname = property(_router_hostname)
+    #
+    # def _remote_network_name(self):
+    #     return self.peer_netixlan.net.name
+    # remote_network_name = property(_remote_network_name)
+    #
+    # def _remote_network_asn(self):
+    #     return self.peer_netixlan.asn
+    # remote_network_asn = property(_remote_network_asn)
 
 
 class PolicyBase(models.Model):
