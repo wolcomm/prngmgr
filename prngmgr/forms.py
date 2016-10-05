@@ -1,16 +1,9 @@
-from django.forms import (
-    ModelForm,
-    BaseInlineFormSet,
-    ModelChoiceField,
-    CharField,
-    IntegerField,
-)
-from django.forms.widgets import (
-    TextInput,
-    HiddenInput,
-)
-from prngmgr.models.models import *
+from django.forms import ModelForm, ModelChoiceField, CharField
+from django.forms.widgets import TextInput, HiddenInput
+from django_peeringdb.models import concrete as pdb_models
+from prngmgr import models
 from prngmgr.settings import *
+
 
 class NetworkIXLanHiddenWidget(TextInput):
     def __init__(self, attrs=None):
@@ -21,7 +14,7 @@ class NetworkIXLanHiddenWidget(TextInput):
         super(NetworkIXLanHiddenWidget,self).__init__(attrs)
 
     def render(self, name, value, attrs=None):
-        netixlan = NetworkIXLan.objects.get(id=value)
+        netixlan = pdb_models.NetworkIXLan.objects.get(id=value)
         label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
         html = "%s<i>%s</i>" % (
             super(NetworkIXLanHiddenWidget, self).render(name, value, attrs),
@@ -36,7 +29,7 @@ class NetworkIXLanChoiceField(ModelChoiceField):
 
 class PeeringRouterForm(ModelForm):
     class Meta:
-        model = PeeringRouter
+        model = models.PeeringRouter
         fields = ['hostname']
 
 class PeeringRouterIXInterfaceForm(ModelForm):
@@ -45,17 +38,17 @@ class PeeringRouterIXInterfaceForm(ModelForm):
         widget=NetworkIXLanHiddenWidget
     )
     class Meta:
-        model = PeeringRouterIXInterface
+        model = models.PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
         widgets = {
             'prngrtr': HiddenInput,
         }
 
 class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
-    available = NetworkIXLan.objects.filter(
+    available = pdb_models.NetworkIXLan.objects.filter(
         net__asn=MY_ASN
     ).exclude(
-        id__in=PeeringRouterIXInterface.objects.all().values('netixlan')
+        id__in=models.PeeringRouterIXInterface.objects.all().values('netixlan')
     )
     netixlan = NetworkIXLanChoiceField(
         queryset=available,

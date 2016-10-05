@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
 from collections import Counter
+from django.core.management.base import BaseCommand, CommandError
+from prngmgr import models
 from prngmgr.settings import *
-from prngmgr.models.models import *
 from prngmgr.snmp import *
+
 
 class Command(BaseCommand):
     help = 'Queries peering routers for BGP related SNMP data'
@@ -19,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         # find our Network object
-        me = Network.objects.get(asn=MY_ASN)
+        me = models.Network.objects.get(asn=MY_ASN)
 
         # create list of PeeringRouters and a totals counter
         rtrs = []
@@ -28,13 +29,13 @@ class Command(BaseCommand):
         if options['router']:
             # check if we were given a router to query
             try:
-                rtr = PeeringRouter.objects.get(hostname=options['router'])
-            except PeeringRouter.DoesNotExist:
+                rtr = models.PeeringRouter.objects.get(hostname=options['router'])
+            except models.PeeringRouter.DoesNotExist:
                 raise CommandError('PeeringRouter "%s" does not exist' % options['router'])
             rtrs.append(rtr)
         else:
             # fallback to querying all PeeringRouters
-            for rtr in PeeringRouter.objects.all():
+            for rtr in models.PeeringRouter.objects.all():
                 rtrs.append(rtr)
 
         for rtr in rtrs:
@@ -48,14 +49,14 @@ class Command(BaseCommand):
             bgptable = get_bgp_table(rtr.hostname)
 
             # get all PeeringRouterIXInterfaces on router
-            ifaces = PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
+            ifaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
             for iface in ifaces:
 
                 # update count
                 count['prngrtrifaces'] += 1
 
                 # get all NetworkIXLans on a common IX
-                peer_netixlans = NetworkIXLan.objects.filter(ixlan=iface.netixlan.ixlan)
+                peer_netixlans = models.NetworkIXLan.objects.filter(ixlan=iface.netixlan.ixlan)
                 for peer_netixlan in peer_netixlans:
 
                     # check that we're not peering with ourselves
@@ -69,7 +70,9 @@ class Command(BaseCommand):
                         count['prngsess4'] += 1
 
                         # found an ipv4 session
-                        prngsessions = PeeringSession.objects.filter(af=PeeringSession.AF_IPV4).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
+                        prngsessions = models.PeeringSession.objects.filter(
+                            af=models.PeeringSession.AF_IPV4
+                        ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
                         if prngsessions.exists():
 
                             # PeeringSession exists: retrieving it
@@ -78,7 +81,10 @@ class Command(BaseCommand):
                         else:
 
                             # PeeringSession doesn't exist: creating it
-                            prngsess = PeeringSession(af=PeeringSession.AF_IPV4, peer_netixlan=peer_netixlan, prngrtriface=iface)
+                            prngsess = models.PeeringSession(
+                                af=models.PeeringSession.AF_IPV4,
+                                peer_netixlan=peer_netixlan, prngrtriface=iface
+                            )
 
                         # search for a bgptable entry
                         bgpprng = None
@@ -103,7 +109,9 @@ class Command(BaseCommand):
                         count['prngsess6'] += 1
 
                         # found an ipv6 session
-                        prngsessions = PeeringSession.objects.filter(af=PeeringSession.AF_IPV6).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
+                        prngsessions = models.PeeringSession.objects.filter(
+                            af=models.PeeringSession.AF_IPV6
+                        ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
                         if prngsessions.exists():
 
                             # PeeringSession exists: retrieving it
@@ -111,7 +119,10 @@ class Command(BaseCommand):
                         else:
 
                             # PeeringSession doesn't exist: creating it
-                            prngsess = PeeringSession(af=PeeringSession.AF_IPV6, peer_netixlan=peer_netixlan, prngrtriface=iface)
+                            prngsess = models.PeeringSession(
+                                af=models.PeeringSession.AF_IPV6,
+                                peer_netixlan=peer_netixlan, prngrtriface=iface
+                            )
 
                         # search for a bgptable entry 
                         bgpprng = None
@@ -143,14 +154,14 @@ class Command(BaseCommand):
     def _update_state(self, prngsess, bgpprng):
         if bgpprng:
             # found a configured peering: update state fields
-            prngsess.provisioning_state = PeeringSession.PROV_COMPLETE
+            prngsess.provisioning_state = models.PeeringSession.PROV_COMPLETE
             prngsess.admin_state = bgpprng['cbgpPeer2AdminStatus']
             prngsess.operational_state = bgpprng['cbgpPeer2State']
         else:
             # check if the peering session was previously provisioned, and reset if necessary
-            if prngsess.provisioning_state == PeeringSession.PROV_COMPLETE:
-                prngsess.provisioning_state = PeeringSession.PROV_NONE
-            prngsess.admin_state = PeeringSession.ADMIN_NONE
-            prngsess.operational_state = PeeringSession.OPER_NONE
+            if prngsess.provisioning_state == models.PeeringSession.PROV_COMPLETE:
+                prngsess.provisioning_state = models.PeeringSession.PROV_NONE
+            prngsess.admin_state = models.PeeringSession.ADMIN_NONE
+            prngsess.operational_state = models.PeeringSession.OPER_NONE
         return
 

@@ -1,13 +1,8 @@
-from django.http import (
-    HttpResponseRedirect,
-    HttpResponseNotFound,
-    HttpResponseNotAllowed,
-)
-from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed
 from django_peeringdb.models.concrete import Network
-from prngmgr import settings, forms
-from prngmgr.models import models
+from prngmgr import settings, forms, models
 
 me = Network.objects.get(asn=settings.MY_ASN)
 

@@ -2,7 +2,6 @@ import ipaddress
 from pysnmp.hlapi import *
 from pysnmp.proto.rfc1905 import EndOfMibView
 from prngmgr.settings import SNMP
-# from prngmgr.models.models import *
 from collections import defaultdict
 
 

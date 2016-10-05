@@ -1,15 +1,9 @@
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    HttpResponseNotFound,
-    HttpResponseNotAllowed,
-)
-from django.template import loader
-from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseNotAllowed
+from django.template import loader
 from django_peeringdb.models.concrete import Network
-from prngmgr import settings, forms
-from prngmgr.models import models
+from prngmgr import settings, forms, models
 from prngmgr.views import utils
 
 me = Network.objects.get(asn=settings.MY_ASN)
@@ -30,7 +24,7 @@ def routers(request, rtr_id):
                 form = forms.PeeringRouterForm(request.POST)
             else:
                 try:
-                    router = forms.PeeringRouter.objects.get(id=rtr_id)
+                    router = models.PeeringRouter.objects.get(id=rtr_id)
                 except:
                     return HttpResponseNotFound(rtr_id)
                 form = forms.PeeringRouterForm(request.POST, instance=router)
