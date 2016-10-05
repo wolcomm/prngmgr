@@ -1,4 +1,3 @@
-from django.db.models import Count
 from rest_framework import serializers
 from django_countries.serializer_fields import CountryField
 from django_inet.rest import IPAddressField
@@ -79,9 +78,6 @@ class PeeringRouterIXInterfaceSerializer(serializers.HyperlinkedModelSerializer)
 
 
 class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
-    provisioning_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.PROV_OPTIONS)
-    admin_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.ADMIN_OPTIONS)
-    operational_state = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.OPER_OPTIONS)
     session_state = serializers.SerializerMethodField()
     af = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.AF_OPTIONS)
     address_family = serializers.SerializerMethodField()
@@ -107,6 +103,6 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = prngmgr_models.PeeringSession
-        fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'af',
-                  'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
+        fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'general_state',
+                  'af', 'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
                   'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn')
