@@ -105,3 +105,14 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'session_class',
                   'af', 'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
                   'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn')
+
+
+class SummarySerializer(serializers.BaseSerializer):
+    # label = serializers.CharField()
+    # value = serializers.FloatField()
+    def to_representation(self, instance):
+        r = {
+            'label': instance.label,
+            'value': instance.value
+        }
+        return r

@@ -1,5 +1,7 @@
+from django.db.models import Count
 from rest_framework import permissions
-from rest_framework import viewsets
+from rest_framework import viewsets, views
+from rest_framework.response import Response
 from rest_framework.decorators import list_route
 from django_peeringdb.models import concrete as pdb_models
 from prngmgr import models as prngmgr_models
@@ -178,6 +180,15 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     @list_route()
+    def status_summary(self, *args, **kwargs):
+        summary = self.queryset.values('session_state').annotate(value=Count('session_state'))
+        for item in summary:
+            item['label'] = item['session_state']
+        serializer = serializers.SummarySerializer(summary, many=True)
+        response = serializer.data
+        return Response(response)
+
+    @list_route()
     def datatable(self, request, *args, **kwargs):
         query_params = datatables.QueryParams(request)
         query = datatables.QueryView(
@@ -214,3 +225,6 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response
+
+class SessionStateSummaryView(views.APIView):
+    query_set = prngmgr_models.PeeringSession.objects.all()
