@@ -108,20 +108,6 @@ class PeeringSessionBase(HandleRefModel):
             return ALERT_DANGER
     get_operational_state_alert = property(_get_operational_state_alert)
 
-    GEN_NONE = 0
-    GEN_PROV = 1
-    GEN_ADMIN = 2
-    GEN_DOWN = 3
-    GEN_UP = 4
-    GEN_OPTIONS = (
-        (GEN_NONE, None),
-        (GEN_PROV, "Provisioning"),
-        (GEN_ADMIN, "Admin Down"),
-        (GEN_DOWN, "Down"),
-        (GEN_UP, "Up"),
-    )
-    general_state = models.IntegerField(choices=GEN_OPTIONS, default=GEN_NONE)
-
     AF_UNKNOWN = 0
     AF_IPV4 = 1
     AF_IPV6 = 2
