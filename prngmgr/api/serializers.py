@@ -78,9 +78,11 @@ class PeeringRouterIXInterfaceSerializer(serializers.HyperlinkedModelSerializer)
 
 
 class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
-    session_state = serializers.SerializerMethodField()
+    session_class = serializers.SerializerMethodField()
+    session_state = serializers.CharField()
     af = serializers.ChoiceField(choices=prngmgr_models.PeeringSession.AF_OPTIONS)
-    address_family = serializers.SerializerMethodField()
+    # address_family = serializers.SerializerMethodField()
+    address_family = serializers.CharField()
     local_address = IPAddressField()
     remote_address = IPAddressField()
 
@@ -101,8 +103,20 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
     def get_address_family(self, obj):
         return obj.get_af_display()
 
+    def get_session_class(self, obj):
+        if obj.session_state == 'Up':
+            return 'success'
+        elif obj.session_state == 'Down':
+            return 'danger'
+        elif obj.session_state == 'Admin Down':
+            return 'warning'
+        elif obj.session_state == 'Provisioning':
+            return 'info'
+        else:
+            return None
+
     class Meta:
         model = prngmgr_models.PeeringSession
         fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'general_state',
                   'af', 'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
-                  'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn')
+                  'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn', 'session_class')

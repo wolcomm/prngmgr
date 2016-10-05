@@ -21,10 +21,8 @@
                         data_table.responsive.recalc();
                     },
                     "rowCallback": function (row, data, index) {
-                        if (data.session_state) {
-                            if (data.session_state.state) {
-                                $( row ).addClass(data.session_state.class);
-                            }
+                        if (data.session_class) {
+                            $( row ).addClass(data.session_class);
                         }
                     }
                 })

@@ -201,7 +201,7 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
              'name': 'peer_netixlan__asn'},
             {'title': 'Address Family',
              'data': 'address_family',
-             'name': 'af'},
+             'name': 'address_family'},
             {'title': 'Peer Address',
              'data': 'remote_address',
              'name': 'remote_address',
@@ -211,10 +211,10 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
              'data': 'router_hostname',
              'name': 'prngrtriface__prngrtr__hostname'},
             {'title': 'State',
-             'data': 'session_state.display',
-             'name': 'session_state.state',
-             'orderable': False,
-             'searchable': False},
+             'data': 'session_state',
+             'name': 'session_state',
+             'orderable': True,
+             'searchable': True},
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response

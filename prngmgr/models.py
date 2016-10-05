@@ -138,10 +138,38 @@ class PeeringSessionBase(HandleRefModel):
         tag = "prngsess"
 
 
+class PeeringSessionManager(models.Manager):
+    def get_queryset(self):
+        base_query_set = super(PeeringSessionManager, self).get_queryset()
+        query_set = base_query_set.annotate(
+            address_family=models.Case(
+                models.When(af=1, then=models.Value('IPv4')),
+                models.When(af=2, then=models.Value('IPv6')),
+                default=models.Value('Unknown'),
+                output_field=models.CharField()
+            ),
+            session_state=models.Case(
+                models.When(provisioning_state=2, then=models.Case(
+                    models.When(admin_state=2, then=models.Case(
+                        models.When(operational_state=6, then=models.Value('Up')),
+                        default=models.Value('Down')
+                    )),
+                    default=models.Value('Admin Down')
+                )),
+                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                default=models.Value('None'),
+                output_field=models.CharField()
+            )
+        )
+        return query_set
+
+
 class PeeringSession(PeeringSessionBase):
 
     peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
     prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
+
+    objects = PeeringSessionManager()
 
     class Meta:
         unique_together = ("af", "prngrtriface", "peer_netixlan")
