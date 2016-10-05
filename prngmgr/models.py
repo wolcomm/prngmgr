@@ -182,30 +182,12 @@ class PeeringSessionManager(models.Manager):
 
 
 class PeeringSession(PeeringSessionBase):
-
-    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
-    prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
-
     objects = PeeringSessionManager()
 
     class Meta:
         unique_together = ("af", "prngrtriface", "peer_netixlan")
-
-    # def _ixp_name(self):
-    #     return self.prngrtriface.netixlan.ixlan.ix.name
-    # ixp_name = property(_ixp_name)
-    #
-    # def _router_hostname(self):
-    #     return self.prngrtriface.prngrtr.hostname
-    # router_hostname = property(_router_hostname)
-    #
-    # def _remote_network_name(self):
-    #     return self.peer_netixlan.net.name
-    # remote_network_name = property(_remote_network_name)
-    #
-    # def _remote_network_asn(self):
-    #     return self.peer_netixlan.asn
-    # remote_network_asn = property(_remote_network_asn)
+    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
+    prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
 
 
 class PolicyBase(models.Model):
