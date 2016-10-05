@@ -175,18 +175,15 @@ class PeeringRouterIXInterfaceViewSet(viewsets.ModelViewSet):
 
 
 class PeeringSessionViewSet(viewsets.ModelViewSet):
-    queryset = prngmgr_models.PeeringSession.objects.all()
+    model_manager = prngmgr_models.PeeringSession.objects
+    queryset = model_manager.all()
     serializer_class = serializers.PeeringSessionSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     @list_route()
     def status_summary(self, *args, **kwargs):
-        summary = self.queryset.values('session_state').annotate(value=Count('session_state'))
-        for item in summary:
-            item['label'] = item['session_state']
-        serializer = serializers.SummarySerializer(summary, many=True)
-        response = serializer.data
-        return Response(response)
+        summary = self.model_manager.status_summary()
+        return Response(summary)
 
     @list_route()
     def datatable(self, request, *args, **kwargs):

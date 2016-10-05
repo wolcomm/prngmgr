@@ -129,6 +129,18 @@ class PeeringSessionManager(models.Manager):
     def get_queryset(self):
         base_query_set = super(PeeringSessionManager, self).get_queryset()
         query_set = base_query_set.annotate(
+            session_state=models.Case(
+                models.When(provisioning_state=2, then=models.Case(
+                    models.When(admin_state=2, then=models.Case(
+                        models.When(operational_state=6, then=models.Value('Up')),
+                        default=models.Value('Down')
+                    )),
+                    default=models.Value('Admin Down')
+                )),
+                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                default=models.Value('None'),
+                output_field=models.CharField()
+            ),
             local_address=models.Case(
                 models.When(af=1, then=models.F('prngrtriface__netixlan__ipaddr4')),
                 models.When(af=2, then=models.F('prngrtriface__netixlan__ipaddr6')),
@@ -147,7 +159,17 @@ class PeeringSessionManager(models.Manager):
                 default=models.Value('Unknown'),
                 output_field=models.CharField()
             ),
-            session_state=models.Case(
+            ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
+            router_hostname=models.F('prngrtriface__prngrtr__hostname'),
+            remote_network_name = models.F('peer_netixlan__net__name'),
+            remote_network_asn = models.F('peer_netixlan__net__asn')
+        )
+        return query_set
+
+    def status_summary(self):
+        base_query_set = super(PeeringSessionManager, self).get_queryset()
+        summary = base_query_set.annotate(
+            label=models.Case(
                 models.When(provisioning_state=2, then=models.Case(
                     models.When(admin_state=2, then=models.Case(
                         models.When(operational_state=6, then=models.Value('Up')),
@@ -158,13 +180,8 @@ class PeeringSessionManager(models.Manager):
                 models.When(provisioning_state=1, then=models.Value('Provisioning')),
                 default=models.Value('None'),
                 output_field=models.CharField()
-            ),
-            ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
-            router_hostname=models.F('prngrtriface__prngrtr__hostname'),
-            remote_network_name = models.F('peer_netixlan__net__name'),
-            remote_network_asn = models.F('peer_netixlan__net__asn')
-        )
-        return query_set
+            )).values('label').annotate(value=models.Count('label'))
+        return summary
 
 
 class PeeringSession(PeeringSessionBase):

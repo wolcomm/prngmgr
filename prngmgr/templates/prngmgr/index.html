@@ -4,24 +4,44 @@
 {% block scripts %}
     <script type="text/javascript" charset="utf-8">
         $(document).ready( function () {
+            var classes = {
+                'Provisioning': "#2d9bd2",
+                'Admin Down': "#e8c517",
+                'Down': "#b84747",
+                'Up': "#67b847"
+            };
+            var summary = $.getJSON("/api/session/status_summary/");
             var pie = Plotly.d3.select('#pie').node();
             var margin = 30;
-            var data = {
-                showlegend: false,
-                hole: 0.2,
-                marker: {
-                    colors: ["#2d9bd2", "#e8c517", "#b84747", "#67b847"],
-                    line: {color: "#fff" ,width: 2}
-                },
-                values: [10, 18, 7, 35],
-                labels: ['Provisioning', 'Admin Down', 'Down', 'Established'],
-                textinfo: "value",
-                type: 'pie'
-            };
             var layout = {
                 margin: {t: margin, b: margin, l: margin, r: margin}
             };
-            Plotly.newPlot(pie, [data], layout);
+            summary.done( function (response) {
+                var values = [];
+                var labels = [];
+                var colors = [];
+                for (i in response) {
+                    var label = response[i].label;
+                    if (label != "None") {
+                        labels.push(label);
+                        values.push(response[i].value);
+                        colors.push(classes[label]);
+                    }
+                }
+                var data = {
+                    showlegend: false,
+                    hole: 0.2,
+                    marker: {
+                        colors: colors,
+                        line: {color: "#fff" ,width: 2}
+                    },
+                    values: values,
+                    labels: labels,
+                    textinfo: "value",
+                    type: 'pie'
+                };
+                Plotly.newPlot(pie, [data], layout);
+            });
         })
     </script>
 {% endblock %}
