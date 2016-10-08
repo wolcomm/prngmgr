@@ -219,6 +219,9 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
             {'title': 'State',
              'data': 'session_state',
              'name': 'session_state'},
+            {'title': 'Accepted Prefixes',
+             'data': 'accepted_prefixes',
+             'name': 'accepted_prefixes'}
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response
