@@ -101,6 +101,5 @@ ENV/
 # Other settings
 /DjangoProject_prngmgr/
 /templates/
-/prngmgr/migrations/
 db.sqlite3
 manage.py
