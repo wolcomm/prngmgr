@@ -120,7 +120,7 @@ class PeeringSessionBase(HandleRefModel):
     af = models.IntegerField(choices=AF_OPTIONS, default=AF_UNKNOWN)
 
     accepted_prefixes = models.IntegerField(null=True, default=None)
-    previous_state = models.CharField(null=True, max_length=12)
+    previous_state = models.CharField(max_length=12, default='None')
     state_changed = models.DateTimeField(default=timezone.now)
 
     class Meta:
