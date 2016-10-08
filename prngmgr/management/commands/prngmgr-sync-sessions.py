@@ -1,8 +1,7 @@
 from collections import Counter
 from django.core.management.base import BaseCommand, CommandError
-from prngmgr import models
-from prngmgr.settings import *
-from prngmgr.snmp import *
+from prngmgr import models, settings
+from prngmgr.snmp import get_bgp_state
 
 
 class Command(BaseCommand):
@@ -20,7 +19,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         # find our Network object
-        me = models.Network.objects.get(asn=MY_ASN)
+        me = models.Network.objects.get(asn=settings.MY_ASN)
 
         # create list of PeeringRouters and a totals counter
         rtrs = []
@@ -46,7 +45,7 @@ class Command(BaseCommand):
 
             # collect cbgpPeer2Table via SNMP
             self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
-            bgptable = get_bgp_table(rtr.hostname)
+            bgptable = get_bgp_state(rtr.hostname)
 
             # get all PeeringRouterIXInterfaces on router
             ifaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
@@ -157,11 +156,13 @@ class Command(BaseCommand):
             prngsess.provisioning_state = models.PeeringSession.PROV_COMPLETE
             prngsess.admin_state = bgpprng['cbgpPeer2AdminStatus']
             prngsess.operational_state = bgpprng['cbgpPeer2State']
+            prngsess.accepted_prefixes = bgpprng['TotalAcceptedPrefixes']
         else:
             # check if the peering session was previously provisioned, and reset if necessary
             if prngsess.provisioning_state == models.PeeringSession.PROV_COMPLETE:
                 prngsess.provisioning_state = models.PeeringSession.PROV_NONE
             prngsess.admin_state = models.PeeringSession.ADMIN_NONE
             prngsess.operational_state = models.PeeringSession.OPER_NONE
+            prngsess.accepted_prefixes = 0
         return
 

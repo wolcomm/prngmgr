@@ -118,6 +118,8 @@ class PeeringSessionBase(HandleRefModel):
     )
     af = models.IntegerField(choices=AF_OPTIONS, default=AF_UNKNOWN)
 
+    accepted_prefixes = models.IntegerField(default=0)
+
     class Meta:
         abstract = True
 

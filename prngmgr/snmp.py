@@ -67,7 +67,7 @@ def get_bgp_state(host):
                     results[address]['cbgpPeer2Type'] = index[0]
                     results[address][name] = val
     for address in results:
-        results[address]['address_families'] = dict()
+        results[address]['address_families'] = defaultdict(dict)
     for (errorIndication, errorStatus,
          errorIndex, varBinds) in bulkCmd(snmp, usm, target, context, 0, 25, ObjectType(af_table),
                                           lexicographicMode=False, lookupMib=True):
@@ -81,10 +81,9 @@ def get_bgp_state(host):
                 if not isinstance(val, EndOfMibView):
                     (mib, name, index) = key.loadMibs('BGP4-MIB').getMibSymbol()
                     address = index[1].prettyPrint()
-                    afi = index[2].prettyPrint()
-                    safi = index[3].prettyPrint()
-                    afi_safi_name = "%s.%s" % (afi, safi)
-                    results[address]['address_families'][afi_safi_name] = {name: val}
+                    afi = index[2]
+                    safi = index[3]
+                    results[address]['address_families'][afi][safi] = {name: val}
     for (errorIndication, errorStatus,
          errorIndex, varBinds) in bulkCmd(snmp, usm, target, context, 0, 25, ObjectType(prefix_table),
                                           lexicographicMode=False, lookupMib=True):
@@ -98,13 +97,17 @@ def get_bgp_state(host):
                 if not isinstance(val, EndOfMibView):
                     (mib, name, index) = key.loadMibs('BGP4-MIB').getMibSymbol()
                     address = index[1].prettyPrint()
-                    afi = index[2].prettyPrint()
-                    safi = index[3].prettyPrint()
-                    afi_safi_name = "%s.%s" % (afi, safi)
-                    results[address]['address_families'][afi_safi_name][name] = val
+                    afi = index[2]
+                    safi = index[3]
+                    results[address]['address_families'][afi][safi][name] = val
     for address in results:
         if results[address]['cbgpPeer2Type'] == 1:
             results[address]['cbgpPeer2RemoteAddr'] = ipaddress.IPv4Address(int(address, 16))
         elif results[address]['cbgpPeer2Type'] == 2:
             results[address]['cbgpPeer2RemoteAddr'] = ipaddress.IPv6Address(int(address, 16))
+        results[address]['TotalAcceptedPrefixes'] = 0
+        for afi in results[address]['address_families']:
+            for safi in results[address]['address_families'][afi]:
+                results[address]['TotalAcceptedPrefixes'] += \
+                    results[address]['address_families'][afi][safi]['cbgpPeer2AcceptedPrefixes']
     return results
