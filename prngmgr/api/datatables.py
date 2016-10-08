@@ -19,7 +19,8 @@ class TableDefView(object):
 
 
 class QueryView(object):
-    def __init__(self, query_set=None, serializer_class=None, query_params=None, allow_filter=True, static_order=None):
+    def __init__(self, query_set=None, serializer_class=None, query_params=None,
+                 static_filter=None, static_exclude=None, static_order=None):
         if not isinstance(query_params, QueryParams):
             raise TypeError("%s not an instance of QueryParams" % query_params)
         if not isinstance(query_set, QuerySet):
@@ -34,14 +35,19 @@ class QueryView(object):
             records_total = base.count()
             filter_value = query['search']['value']
             filter_query = Q()
-            if filter_value and allow_filter:
+            exclude_query = Q()
+            if static_filter:
+                filter_query |= Q(**static_filter)
+            elif filter_value:
                 filter_cols = []
                 for col_index in query['columns']:
                     if query['columns'][col_index]['searchable']:
                         filter_cols.append(query['columns'][col_index]['name'])
                 for col in filter_cols:
                     filter_query |= Q(**{"%s__icontains" % col: filter_value})
-            filtered = base.filter(filter_query)
+            if static_exclude:
+                exclude_query |= Q(**static_exclude)
+            filtered = base.filter(filter_query).exclude(exclude_query)
             records_filtered = filtered.count()
             order_by_columns = list()
             if static_order:
