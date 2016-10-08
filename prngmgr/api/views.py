@@ -193,7 +193,7 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
             serializer_class=self.serializer_class,
             query_params=query_params,
             allow_filter=False,
-            static_order='state_changed',
+            static_order='-state_changed',
         )
         return query.response
 
