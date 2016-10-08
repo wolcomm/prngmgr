@@ -12,6 +12,7 @@ $(document).ready( function () {
         ordering: false,
         lengthChange: false,
         pageLength: 10,
+        responsive: true,
         columns: [
             {title: "Previous", data: 'previous_state'},
             {title: "Current", data: 'session_state'},
