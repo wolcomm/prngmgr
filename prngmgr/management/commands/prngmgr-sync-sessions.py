@@ -1,5 +1,6 @@
 from collections import Counter
 from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
 from prngmgr import models, settings
 from prngmgr.snmp import get_bgp_state
 
@@ -151,18 +152,29 @@ class Command(BaseCommand):
         self.stdout.write( "updated %d ipv6 peering sessions: %d provisioned in bgp" % (totals['prngsess6'], totals['bgpprng6']) )
 
     def _update_state(self, prngsess, bgpprng):
+        changed = False
         if bgpprng:
             # found a configured peering: update state fields
-            prngsess.provisioning_state = models.PeeringSession.PROV_COMPLETE
-            prngsess.admin_state = bgpprng['cbgpPeer2AdminStatus']
-            prngsess.operational_state = bgpprng['cbgpPeer2State']
+            if prngsess.provisioning_state != models.PeeringSession.PROV_COMPLETE:
+                prngsess.provisioning_state = models.PeeringSession.PROV_COMPLETE
+                changed = True
+            if prngsess.admin_state != bgpprng['cbgpPeer2AdminStatus']:
+                prngsess.admin_state = bgpprng['cbgpPeer2AdminStatus']
+                changed = True
+            if prngsess.operational_state != bgpprng['cbgpPeer2State']:
+                prngsess.operational_state = bgpprng['cbgpPeer2State']
+                changed = True
             prngsess.accepted_prefixes = bgpprng['TotalAcceptedPrefixes']
         else:
             # check if the peering session was previously provisioned, and reset if necessary
-            if prngsess.provisioning_state == models.PeeringSession.PROV_COMPLETE:
+            if prngsess.provisioning_state != models.PeeringSession.PROV_NONE:
                 prngsess.provisioning_state = models.PeeringSession.PROV_NONE
+                changed = True
             prngsess.admin_state = models.PeeringSession.ADMIN_NONE
             prngsess.operational_state = models.PeeringSession.OPER_NONE
             prngsess.accepted_prefixes = 0
-        return
+        if changed:
+            prngsess.previous_state = prngsess.session_state
+            prngsess.state_changed = timezone.now
+        return changed
 

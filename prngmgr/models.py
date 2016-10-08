@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django_handleref.models import HandleRefModel
 from django_inet.models import IPAddressField
 from django_peeringdb.models.concrete import *
@@ -119,6 +120,8 @@ class PeeringSessionBase(HandleRefModel):
     af = models.IntegerField(choices=AF_OPTIONS, default=AF_UNKNOWN)
 
     accepted_prefixes = models.IntegerField(null=True, default=None)
+    previous_state = models.CharField(null=True, max_length=12)
+    state_changed = models.DateTimeField(default=timezone.now)
 
     class Meta:
         abstract = True
