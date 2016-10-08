@@ -13,7 +13,6 @@ $(document).ready( function () {
         lengthChange: false,
         pageLength: 10,
         columns: [
-            // {title: "Timestamp", data: 'state_changed'},
             {title: "Previous", data: 'previous_state'},
             {title: "Current", data: 'session_state'},
             {title: "Peer", data: 'remote_network_name'},
