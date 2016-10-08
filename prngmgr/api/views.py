@@ -186,6 +186,18 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
         return Response(summary)
 
     @list_route()
+    def state_changes(self, request, *args, **kwargs):
+        query_params = datatables.QueryParams(request)
+        query = datatables.QueryView(
+            query_set=self.queryset,
+            serializer_class=self.serializer_class,
+            query_params=query_params,
+            allow_filter=False,
+            static_order='state_changed',
+        )
+        return query.response
+
+    @list_route()
     def datatable(self, request, *args, **kwargs):
         query_params = datatables.QueryParams(request)
         query = datatables.QueryView(
@@ -231,6 +243,3 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response
-
-class SessionStateSummaryView(views.APIView):
-    query_set = prngmgr_models.PeeringSession.objects.all()

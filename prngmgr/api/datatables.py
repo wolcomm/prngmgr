@@ -19,7 +19,7 @@ class TableDefView(object):
 
 
 class QueryView(object):
-    def __init__(self, query_set=None, serializer_class=None, query_params=None):
+    def __init__(self, query_set=None, serializer_class=None, query_params=None, allow_filter=True, static_order=None):
         if not isinstance(query_params, QueryParams):
             raise TypeError("%s not an instance of QueryParams" % query_params)
         if not isinstance(query_set, QuerySet):
@@ -34,7 +34,7 @@ class QueryView(object):
             records_total = base.count()
             filter_value = query['search']['value']
             filter_query = Q()
-            if filter_value:
+            if filter_value and allow_filter:
                 filter_cols = []
                 for col_index in query['columns']:
                     if query['columns'][col_index]['searchable']:
@@ -44,13 +44,16 @@ class QueryView(object):
             filtered = base.filter(filter_query)
             records_filtered = filtered.count()
             order_by_columns = list()
-            for i in query['order']:
-                col_index = query['order'][i]['column']
-                col_name = query['columns'][col_index]['name']
-                if query['order'][i]['dir']:
-                    order_by_columns.append("-%s" % col_name)
-                else:
-                    order_by_columns.append(col_name)
+            if static_order:
+                order_by_columns.append(static_order)
+            else:
+                for i in query['order']:
+                    col_index = query['order'][i]['column']
+                    col_name = query['columns'][col_index]['name']
+                    if query['order'][i]['dir']:
+                        order_by_columns.append("-%s" % col_name)
+                    else:
+                        order_by_columns.append(col_name)
             ordered = filtered.order_by(*order_by_columns)
             page_start = query['start']
             page_end = page_start + query['length']

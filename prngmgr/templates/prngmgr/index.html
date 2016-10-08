@@ -2,48 +2,7 @@
 {% load staticfiles %}
 
 {% block scripts %}
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready( function () {
-            var classes = {
-                'Provisioning': "#2d9bd2",
-                'Admin Down': "#e8c517",
-                'Down': "#b84747",
-                'Up': "#67b847"
-            };
-            var summary = $.getJSON("/api/session/status_summary/");
-            var pie = Plotly.d3.select('#pie').node();
-            var margin = 30;
-            var layout = {
-                margin: {t: margin, b: margin, l: margin, r: margin}
-            };
-            summary.done( function (response) {
-                var values = [];
-                var labels = [];
-                var colors = [];
-                for (i in response) {
-                    var label = response[i].label;
-                    if (label != "None") {
-                        labels.push(label);
-                        values.push(response[i].value);
-                        colors.push(classes[label]);
-                    }
-                }
-                var data = {
-                    showlegend: false,
-                    hole: 0.2,
-                    marker: {
-                        colors: colors,
-                        line: {color: "#fff" ,width: 2}
-                    },
-                    values: values,
-                    labels: labels,
-                    textinfo: "value",
-                    type: 'pie'
-                };
-                Plotly.newPlot(pie, [data], layout);
-            });
-        })
-    </script>
+    <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -72,8 +31,8 @@
             <div id="pie" style="width: 100%; height: 100%"></div>
         </div>
         <div class="col-md-8">
-            <h2>Down Sessions</h2>
-            <table id="down-sessions-table" class="table nowrap" cellpadding="0" width="100%">
+            <h2>Last State Changes</h2>
+            <table id="changed-sessions-table" class="table nowrap compact" cellpadding="0" width="100%">
                 <thead></thead>
             </table>
         </div>

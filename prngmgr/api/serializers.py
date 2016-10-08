@@ -102,6 +102,8 @@ class PeeringSessionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = prngmgr_models.PeeringSession
-        fields = ('provisioning_state', 'admin_state', 'operational_state', 'session_state', 'session_class',
-                  'af', 'address_family', 'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
-                  'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn', 'accepted_prefixes')
+        fields = ('provisioning_state', 'admin_state', 'operational_state',
+                  'session_state', 'session_class', 'af', 'address_family',
+                  'peer_netixlan', 'prngrtriface', 'local_address', 'remote_address',
+                  'ixp_name', 'router_hostname', 'remote_network_name', 'remote_network_asn',
+                  'accepted_prefixes', 'previous_state', 'state_changed')
