@@ -200,16 +200,20 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
         columns = [
             {'title': 'IXP',
              'data': 'ixp_name',
-             'name': 'ixp_name'},
+             'name': 'ixp_name',
+             'responsivePriority': 5},
             {'title': 'Peer Name',
              'data': 'remote_network_name',
-             'name': 'remote_network_name'},
+             'name': 'remote_network_name',
+             'responsivePriority': 1},
             {'title': 'Peer AS',
              'data': 'remote_network_asn',
-             'name': 'remote_network_asn'},
+             'name': 'remote_network_asn',
+             'responsivePriority': 2},
             {'title': 'Address Family',
              'data': 'address_family',
-             'name': 'address_family'},
+             'name': 'address_family',
+             'responsivePriority': 3},
             {'title': 'Peer Address',
              'data': 'remote_address',
              'name': 'remote_address'},
@@ -218,10 +222,12 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
              'name': 'router_hostname'},
             {'title': 'State',
              'data': 'session_state',
-             'name': 'session_state'},
+             'name': 'session_state',
+             'responsivePriority': 4},
             {'title': 'Accepted Prefixes',
              'data': 'accepted_prefixes',
-             'name': 'accepted_prefixes'}
+             'name': 'accepted_prefixes',
+             'responsivePriority': 6}
         ]
         definition = datatables.TableDefView(columns=columns)
         return definition.response
