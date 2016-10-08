@@ -37,7 +37,7 @@ class QueryView(object):
             filter_query = Q()
             exclude_query = Q()
             if static_filter:
-                filter_query |= Q(**static_filter)
+                filter_query |= static_filter
             elif filter_value:
                 filter_cols = []
                 for col_index in query['columns']:
@@ -46,7 +46,7 @@ class QueryView(object):
                 for col in filter_cols:
                     filter_query |= Q(**{"%s__icontains" % col: filter_value})
             if static_exclude:
-                exclude_query |= Q(**static_exclude)
+                exclude_query |= static_exclude
             filtered = base.filter(filter_query).exclude(exclude_query)
             records_filtered = filtered.count()
             order_by_columns = list()

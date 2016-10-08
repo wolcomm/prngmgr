@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, F, Q
 from rest_framework import permissions
 from rest_framework import viewsets, views
 from rest_framework.response import Response
@@ -192,7 +192,7 @@ class PeeringSessionViewSet(viewsets.ModelViewSet):
             query_set=self.queryset,
             serializer_class=self.serializer_class,
             query_params=query_params,
-            static_exclude={"session_state": "previous_state"},
+            static_exclude=Q(**{"session_state": F("previous_state")}),
             static_order='-state_changed',
         )
         return query.response
