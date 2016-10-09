@@ -26,9 +26,7 @@ setup(
             'prngmgr.*',
             'test'
         ],
-        exclude=[
-            'prngmgr.migrations'
-        ]
+        exclude=[]
     ),
     include_package_data=True,
 
