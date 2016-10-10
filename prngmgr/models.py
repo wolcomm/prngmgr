@@ -11,29 +11,11 @@ ALERT_WARNING = 2
 ALERT_DANGER = 3
 
 
-class PeeringRouterBase(HandleRefModel):
+class PeeringRouter(models.Model):
     hostname = models.CharField(max_length=20, unique=True)
 
-    class Meta:
-        abstract = True
 
-    class HandleRef:
-        tag = "prngrtr"
-
-
-class PeeringRouter(PeeringRouterBase):
-    pass
-
-
-class PeeringRouterIXInterfaceBase(HandleRefModel):
-    class Meta:
-        abstract = True
-
-    class HandleRef:
-        tag = "prngrtriface"
-
-
-class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
+class PeeringRouterIXInterface(models.Model):
     netixlan = models.OneToOneField(
         NetworkIXLan,
         default=0, related_name="+", null=True,
@@ -42,7 +24,67 @@ class PeeringRouterIXInterface(PeeringRouterIXInterfaceBase):
     prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
 
 
-class PeeringSessionBase(HandleRefModel):
+class PeeringSessionManager(models.Manager):
+    def get_queryset(self):
+        base_query_set = super(PeeringSessionManager, self).get_queryset()
+        query_set = base_query_set.annotate(
+            session_state=models.Case(
+                models.When(provisioning_state=2, then=models.Case(
+                    models.When(admin_state=2, then=models.Case(
+                        models.When(operational_state=6, then=models.Value('Up')),
+                        default=models.Value('Down')
+                    )),
+                    default=models.Value('Admin Down')
+                )),
+                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                default=models.Value('None'),
+                output_field=models.CharField()
+            ),
+            local_address=models.Case(
+                models.When(af=1, then=models.F('prngrtriface__netixlan__ipaddr4')),
+                models.When(af=2, then=models.F('prngrtriface__netixlan__ipaddr6')),
+                default=None,
+                output_field=IPAddressField()
+            ),
+            remote_address=models.Case(
+                models.When(af=1, then=models.F('peer_netixlan__ipaddr4')),
+                models.When(af=2, then=models.F('peer_netixlan__ipaddr6')),
+                default=None,
+                output_field=IPAddressField()
+            ),
+            address_family=models.Case(
+                models.When(af=1, then=models.Value('IPv4')),
+                models.When(af=2, then=models.Value('IPv6')),
+                default=models.Value('Unknown'),
+                output_field=models.CharField()
+            ),
+            ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
+            router_hostname=models.F('prngrtriface__prngrtr__hostname'),
+            remote_network_name = models.F('peer_netixlan__net__name'),
+            remote_network_asn = models.F('peer_netixlan__net__asn')
+        )
+        return query_set
+
+    def status_summary(self):
+        base_query_set = super(PeeringSessionManager, self).get_queryset()
+        summary = base_query_set.annotate(
+            label=models.Case(
+                models.When(provisioning_state=2, then=models.Case(
+                    models.When(admin_state=2, then=models.Case(
+                        models.When(operational_state=6, then=models.Value('Up')),
+                        default=models.Value('Down')
+                    )),
+                    default=models.Value('Admin Down')
+                )),
+                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                default=models.Value('None'),
+                output_field=models.CharField()
+            )).values('label').annotate(value=models.Count('label'))
+        return summary
+
+
+class PeeringSession(models.Model):
+    objects = PeeringSessionManager()
 
     PROV_NONE = 0
     PROV_PENDING = 1
@@ -122,98 +164,11 @@ class PeeringSessionBase(HandleRefModel):
     accepted_prefixes = models.IntegerField(null=True, default=None)
     previous_state = models.CharField(max_length=12, default='None')
     state_changed = models.DateTimeField(default=timezone.now)
-
-    class Meta:
-        abstract = True
-
-    class HandleRef:
-        tag = "prngsess"
-
-
-class PeeringSessionManager(models.Manager):
-    def get_queryset(self):
-        base_query_set = super(PeeringSessionManager, self).get_queryset()
-        query_set = base_query_set.annotate(
-            session_state=models.Case(
-                models.When(provisioning_state=2, then=models.Case(
-                    models.When(admin_state=2, then=models.Case(
-                        models.When(operational_state=6, then=models.Value('Up')),
-                        default=models.Value('Down')
-                    )),
-                    default=models.Value('Admin Down')
-                )),
-                models.When(provisioning_state=1, then=models.Value('Provisioning')),
-                default=models.Value('None'),
-                output_field=models.CharField()
-            ),
-            local_address=models.Case(
-                models.When(af=1, then=models.F('prngrtriface__netixlan__ipaddr4')),
-                models.When(af=2, then=models.F('prngrtriface__netixlan__ipaddr6')),
-                default=None,
-                output_field=IPAddressField()
-            ),
-            remote_address=models.Case(
-                models.When(af=1, then=models.F('peer_netixlan__ipaddr4')),
-                models.When(af=2, then=models.F('peer_netixlan__ipaddr6')),
-                default=None,
-                output_field=IPAddressField()
-            ),
-            address_family=models.Case(
-                models.When(af=1, then=models.Value('IPv4')),
-                models.When(af=2, then=models.Value('IPv6')),
-                default=models.Value('Unknown'),
-                output_field=models.CharField()
-            ),
-            ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
-            router_hostname=models.F('prngrtriface__prngrtr__hostname'),
-            remote_network_name = models.F('peer_netixlan__net__name'),
-            remote_network_asn = models.F('peer_netixlan__net__asn')
-        )
-        return query_set
-
-    def status_summary(self):
-        base_query_set = super(PeeringSessionManager, self).get_queryset()
-        summary = base_query_set.annotate(
-            label=models.Case(
-                models.When(provisioning_state=2, then=models.Case(
-                    models.When(admin_state=2, then=models.Case(
-                        models.When(operational_state=6, then=models.Value('Up')),
-                        default=models.Value('Down')
-                    )),
-                    default=models.Value('Admin Down')
-                )),
-                models.When(provisioning_state=1, then=models.Value('Provisioning')),
-                default=models.Value('None'),
-                output_field=models.CharField()
-            )).values('label').annotate(value=models.Count('label'))
-        return summary
-
-
-class PeeringSession(PeeringSessionBase):
-    objects = PeeringSessionManager()
-
-    class Meta:
-        unique_together = ("af", "prngrtriface", "peer_netixlan")
     peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
     prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
 
-
-class PolicyBase(models.Model):
     class Meta:
-        abstract = True
-    operational_name = models.CharField(max_length=20, unique=True)
-
-
-class ImportPolicyBase(PolicyBase):
-    class Meta:
-        abstract = True
-    pass
-
-
-class ExportPolicyBase(PolicyBase):
-    class Meta:
-        abstract = True
-    pass
+        unique_together = ("af", "prngrtriface", "peer_netixlan")
 
 
 class InternetExchangeProxyManager(models.Manager):

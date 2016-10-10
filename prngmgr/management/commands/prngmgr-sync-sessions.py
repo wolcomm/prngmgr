@@ -174,7 +174,10 @@ class Command(BaseCommand):
             prngsess.operational_state = models.PeeringSession.OPER_NONE
             prngsess.accepted_prefixes = 0
         if changed:
-            prngsess.previous_state = prngsess.session_state
-            prngsess.state_changed = timezone.now
+            try:
+                prngsess.previous_state = prngsess.session_state
+            except AttributeError:
+                pass
+            prngsess.state_changed = timezone.now()
         return changed
 
