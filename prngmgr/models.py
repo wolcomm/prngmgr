@@ -18,7 +18,7 @@ class PeeringRouter(models.Model):
 class PeeringRouterIXInterface(models.Model):
     netixlan = models.OneToOneField(
         NetworkIXLan,
-        default=0, related_name="+", null=True,
+        default=0, related_name="prngrtriface_set", null=True,
         limit_choices_to={'net__asn': settings.MY_ASN}
     )
     prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
@@ -164,7 +164,7 @@ class PeeringSession(models.Model):
     accepted_prefixes = models.IntegerField(null=True, default=None)
     previous_state = models.CharField(max_length=12, default='None')
     state_changed = models.DateTimeField(default=timezone.now)
-    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="+", null=True)
+    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="prngsess_set", null=True)
     prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
 
     class Meta:
