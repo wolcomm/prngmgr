@@ -14,7 +14,9 @@ ALERT_DANGER = 3
 class PeeringRouterManager(models.Manager):
     def get_queryset(self):
         query_set = super(PeeringRouterManager, self).get_queryset()
-        return query_set
+        return query_set.annotate(
+            peering_interfaces=models.Count('prngrtriface_set', distinct=True)
+        )
 
 
 class PeeringRouter(models.Model):

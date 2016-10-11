@@ -167,6 +167,45 @@ class PeeringRouterViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PeeringRouterSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    @list_route()
+    def datatable(self, request, *args, **kwargs):
+        query_params = datatables.QueryParams(request)
+        query = datatables.QueryView(
+            query_set=self.queryset,
+            serializer_class=self.serializer_class,
+            query_params=query_params
+        )
+        return query.response
+
+    @list_route()
+    def tabledef(self, *args, **kwargs):
+        columns = [
+            {'title': 'Hostname',
+             'data': 'hostname',
+             'name': 'hostname'},
+            {'title': 'Peering Interfaces',
+             'data': 'peering_interfaces',
+             'name': 'peering_interfaces'},
+            {'title': 'Possible Sessions',
+             'data': 'possible_sessions',
+             'name': 'possible_sessions',
+             'orderable': False,
+             'searchable': False},
+            {'title': 'Provisioned Sessions',
+             'data': 'provisioned_sessions',
+             'name': 'provisioned_sessions',
+             'orderable': False,
+             'searchable': False},
+            {'title': 'Established Sessions',
+             'data': 'established_sessions',
+             'name': 'established_sessions',
+             'orderable': False,
+             'searchable': False},
+        ]
+        definition = datatables.TableDefView(columns=columns)
+        return definition.response
+
+
 
 class PeeringRouterIXInterfaceViewSet(viewsets.ModelViewSet):
     queryset = prngmgr_models.PeeringRouterIXInterface.objects.all()

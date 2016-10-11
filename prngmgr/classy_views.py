@@ -74,3 +74,21 @@ class PeeringSessionsView(TemplateView):
             'title': 'Peering Sessions',
         }
         return context
+
+
+class PeeringRoutersView(TemplateView):
+    template_name = 'prngmgr/ajax_table.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PeeringRoutersView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(PeeringRoutersView, self).get_context_data(**kwargs)
+        context['columns'] = reverse_lazy('peeringrouter-tabledef')
+        context['api'] = reverse_lazy('peeringrouter-datatable')
+        context['table'] = {
+            'name': 'routers',
+            'title': 'Peering Routers',
+        }
+        return context
