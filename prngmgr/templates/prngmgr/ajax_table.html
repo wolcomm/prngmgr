@@ -1,34 +1,10 @@
 {% extends "prngmgr/base.html" %}
+{% load staticfiles %}
 
 {% block title %}{{ table.title }}{% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function () {
-            var table = $('#{{ table.name }}');
-            var data_table;
-            var table_def = $.getJSON("{{ columns }}");
-            table_def.done( function (columns) {
-                data_table = table.DataTable({
-                    "processing": true,
-                    "serverSide": true,
-                    "ajax": "{{ api }}",
-                    "searching": true,
-                    "pageLength": 25,
-                    "columns": columns,
-                    "responsive": true,
-                    "drawCallback": function ( settings ) {
-                        data_table.responsive.recalc();
-                    },
-                    "rowCallback": function (row, data, index) {
-                        if (data.session_class) {
-                            $( row ).addClass(data.session_class);
-                        }
-                    }
-                })
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'js/table.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -36,7 +12,8 @@
         <div class="panel-heading">
             <h1 class="panel-title text-center">{{ table.title }}</h1>
         </div>
-        <table id="{{ table.name }}" class="table table-hover nowrap" cellspacing="0" width="100%">
+        <table id="data-table" class="table table-hover nowrap" cellspacing="0" width="100%"
+               prngmgr-def-src="{{ columns }}" prngmgr-data-src="{{ api }}">
             <thead></thead>
         </table>
     </div>
