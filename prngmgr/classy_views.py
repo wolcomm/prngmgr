@@ -31,11 +31,13 @@ class NetworksView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NetworksView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('networkproxy-tabledef')
-        context['api'] = reverse_lazy('networkproxy-datatable')
         context['table'] = {
             'name': 'networks',
             'title': 'Peering Networks',
+            'api': {
+                'definition': reverse_lazy('networkproxy-tabledef'),
+                'data': reverse_lazy('networkproxy-datatable')
+            }
         }
         return context
 
@@ -49,11 +51,13 @@ class InternetExchangeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(InternetExchangeView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('internetexchangeproxy-tabledef')
-        context['api'] = reverse_lazy('internetexchangeproxy-datatable')
         context['table'] = {
             'name': 'ixps',
             'title': 'Internet Exchange Points',
+            'api': {
+                'definition': reverse_lazy('internetexchangeproxy-tabledef'),
+                'data': reverse_lazy('internetexchangeproxy-datatable')
+            }
         }
         return context
 
@@ -67,11 +71,13 @@ class PeeringSessionsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PeeringSessionsView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('peeringsession-tabledef')
-        context['api'] = reverse_lazy('peeringsession-datatable')
         context['table'] = {
             'name': 'sessions',
             'title': 'Peering Sessions',
+            'api': {
+                'definition': reverse_lazy('peeringsession-tabledef'),
+                'data': reverse_lazy('peeringsession-datatable')
+            }
         }
         return context
 
@@ -85,10 +91,12 @@ class PeeringRoutersView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PeeringRoutersView, self).get_context_data(**kwargs)
-        context['columns'] = reverse_lazy('peeringrouter-tabledef')
-        context['api'] = reverse_lazy('peeringrouter-datatable')
         context['table'] = {
             'name': 'routers',
             'title': 'Peering Routers',
+            'api': {
+                'definition': reverse_lazy('peeringrouter-tabledef'),
+                'data': reverse_lazy('peeringrouter-datatable')
+            }
         }
         return context

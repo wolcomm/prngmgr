@@ -73,7 +73,7 @@ class PeeringRouterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = prngmgr_models.PeeringRouter
         fields = ('hostname', 'peering_interfaces',
-          'possible_sessions', 'provisioned_sessions', 'established_sessions')
+                  'possible_sessions', 'provisioned_sessions', 'established_sessions')
 
 
 class PeeringRouterIXInterfaceSerializer(serializers.HyperlinkedModelSerializer):
