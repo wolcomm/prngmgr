@@ -49,24 +49,23 @@ class Command(BaseCommand):
             totals['rtrs'] += 1
 
             # try get bgp neighbors
-            self.stdout.write("Querying %s using napalm" % rtr.hostname )
+            self.stdout.write("Querying %s using napalm" % rtr.hostname)
             try:
                 driver = get_network_driver(rtr.driver)
                 device = driver(hostname=rtr.hostname, **settings.NAPALM)
                 device.open()
                 bgp_neighbors = device.get_bgp_neighbors()
                 device.close()
-            except Exception as e:
-                self.stdout.write("error: %s" % e)
-                pass
+            except Exception:
+                raise
 
             if bgp_neighbors:
                 try:
                     peers = bgp_neighbors[vrf]['peers']
-                except KeyError as e:
+                except KeyError:
                     peers = {}
             else:
-                pass
+                peers = {}
 
             # # collect cbgpPeer2Table via SNMP
             # self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
@@ -93,22 +92,31 @@ class Command(BaseCommand):
                         # update count
                         count['prngsess4'] += 1
 
-                        # found an ipv4 session
-                        prngsessions = models.PeeringSession.objects.filter(
-                            af=models.PeeringSession.AF_IPV4
-                        ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
-                        if prngsessions.exists():
+                        prngsess, new = models.PeeringSession.objects.get_or_create(
+                            af=models.PeeringSession.AF_IPV4,
+                            peer_netixlan=peer_netixlan,
+                            prngrtriface=iface
+                        )
 
-                            # PeeringSession exists: retrieving it
-                            prngsess = prngsessions[0]
+                        if new:
+                            count['newsess4'] += 1
 
-                        else:
-
-                            # PeeringSession doesn't exist: creating it
-                            prngsess = models.PeeringSession(
-                                af=models.PeeringSession.AF_IPV4,
-                                peer_netixlan=peer_netixlan, prngrtriface=iface
-                            )
+                        # # found an ipv4 session
+                        # prngsessions = models.PeeringSession.objects.filter(
+                        #     af=models.PeeringSession.AF_IPV4
+                        # ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
+                        # if prngsessions.exists():
+                        #
+                        #     # PeeringSession exists: retrieving it
+                        #     prngsess = prngsessions[0]
+                        #
+                        # else:
+                        #
+                        #     # PeeringSession doesn't exist: creating it
+                        #     prngsess = models.PeeringSession(
+                        #         af=models.PeeringSession.AF_IPV4,
+                        #         peer_netixlan=peer_netixlan, prngrtriface=iface
+                        #     )
 
                         # # search for a bgptable entry
                         # bgpprng = None
@@ -120,9 +128,9 @@ class Command(BaseCommand):
                         #         count['bgpprng4'] += 1
                         #         bgpprng = bgptable[entry]
 
-                        if prngsess.peer_netixlan.ipaddr4 in peers:
+                        if str(prngsess.peer_netixlan.ipaddr4) in peers:
                             count['bgpprng4'] += 1
-                            bgpprng = peers[prngsess.peer_netixlan.ipaddr4]
+                            bgpprng = peers[str(prngsess.peer_netixlan.ipaddr4)]
                         else:
                             bgpprng = None
 
@@ -138,21 +146,30 @@ class Command(BaseCommand):
                         # update count
                         count['prngsess6'] += 1
 
-                        # found an ipv6 session
-                        prngsessions = models.PeeringSession.objects.filter(
-                            af=models.PeeringSession.AF_IPV6
-                        ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
-                        if prngsessions.exists():
+                        prngsess, new = models.PeeringSession.objects.get_or_create(
+                            af=models.PeeringSession.AF_IPV6,
+                            peer_netixlan=peer_netixlan,
+                            prngrtriface=iface
+                        )
 
-                            # PeeringSession exists: retrieving it
-                            prngsess = prngsessions[0]
-                        else:
+                        if new:
+                            count['newsess6'] += 1
 
-                            # PeeringSession doesn't exist: creating it
-                            prngsess = models.PeeringSession(
-                                af=models.PeeringSession.AF_IPV6,
-                                peer_netixlan=peer_netixlan, prngrtriface=iface
-                            )
+                        # # found an ipv6 session
+                        # prngsessions = models.PeeringSession.objects.filter(
+                        #     af=models.PeeringSession.AF_IPV6
+                        # ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
+                        # if prngsessions.exists():
+                        #
+                        #     # PeeringSession exists: retrieving it
+                        #     prngsess = prngsessions[0]
+                        # else:
+                        #
+                        #     # PeeringSession doesn't exist: creating it
+                        #     prngsess = models.PeeringSession(
+                        #         af=models.PeeringSession.AF_IPV6,
+                        #         peer_netixlan=peer_netixlan, prngrtriface=iface
+                        #     )
 
                         # # search for a bgptable entry
                         # bgpprng = None
@@ -164,9 +181,9 @@ class Command(BaseCommand):
                         #         count['bgpprng6'] += 1
                         #         bgpprng = bgptable[entry]
 
-                        if prngsess.peer_netixlan.ipaddr6 in peers:
+                        if str(prngsess.peer_netixlan.ipaddr6) in peers:
                             count['bgpprng6'] += 1
-                            bgpprng = peers[prngsess.peer_netixlan.ipaddr6]
+                            bgpprng = peers[str(prngsess.peer_netixlan.ipaddr6)]
                         else:
                             bgpprng = None
 
@@ -176,16 +193,20 @@ class Command(BaseCommand):
                         # save and move on
                         prngsess.save()
 
-            self.stdout.write( "%d peering interfaces found" % count['prngrtrifaces'] )
-            self.stdout.write( "updated %d ipv4 peering sessions: %d provisioned in bgp" % (count['prngsess4'], count['bgpprng4']) )
-            self.stdout.write( "updated %d ipv6 peering sessions: %d provisioned in bgp" % (count['prngsess6'], count['bgpprng6']) )
+            self.stdout.write("%d peering interfaces found" % count['prngrtrifaces'])
+            self.stdout.write("updated %d ipv4 peering sessions: %d new, %d provisioned" %
+                              (count['prngsess4'], count['newsess4'], count['bgpprng4']))
+            self.stdout.write("updated %d ipv6 peering sessions: %d new, %d provisioned" %
+                              (count['prngsess6'], count['newsess6'], count['bgpprng6']))
             totals.update(count)
 
         # all done: print some stats
-        self.stdout.write( "finished updates for %d routers" % totals['rtrs'] )
-        self.stdout.write( "%d peering interfaces found" % totals['prngrtrifaces'] )
-        self.stdout.write( "updated %d ipv4 peering sessions: %d provisioned in bgp" % (totals['prngsess4'], totals['bgpprng4']) )
-        self.stdout.write( "updated %d ipv6 peering sessions: %d provisioned in bgp" % (totals['prngsess6'], totals['bgpprng6']) )
+        self.stdout.write("finished updates for %d routers" % totals['rtrs'])
+        self.stdout.write("%d peering interfaces found" % totals['prngrtrifaces'])
+        self.stdout.write("updated %d ipv4 peering sessions: %d new, %d provisioned" %
+                          (totals['prngsess4'], totals['newsess4'], totals['bgpprng4']))
+        self.stdout.write("updated %d ipv6 peering sessions: %d new, %d provisioned" %
+                          (totals['prngsess6'], totals['newsess6'], totals['bgpprng6']))
 
     def _update_state(self, prngsess, bgpprng):
         changed = False
@@ -212,7 +233,9 @@ class Command(BaseCommand):
                 if prngsess.operational_state == models.PeeringSession.OPER_ESTABLISHED:
                     prngsess.operational_state = models.PeeringSession.OPER_NONE
                     changed = True
-            # prngsess.accepted_prefixes = bgpprng['TotalAcceptedPrefixes']
+            prngsess.accepted_prefixes = sum(
+                bgpprng['address_family'][af]['accepted_prefixes'] for af in bgpprng['address_family']
+            )
         else:
             # check if the peering session was previously provisioned, and reset if necessary
             if prngsess.provisioning_state != models.PeeringSession.PROV_NONE:
