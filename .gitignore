@@ -103,3 +103,4 @@ ENV/
 /templates/
 db.sqlite3
 manage.py
+/prngmgr_napalm/
