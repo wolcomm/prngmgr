@@ -1,4 +1,4 @@
 django-peeringdb
 ipaddress
-pysnmp
 djangorestframework
+napalm

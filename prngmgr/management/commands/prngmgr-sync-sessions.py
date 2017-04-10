@@ -2,11 +2,12 @@ from collections import Counter
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from prngmgr import models, settings
-from prngmgr.snmp import get_bgp_state
+from napalm_base import get_network_driver
+# from prngmgr.snmp import get_bgp_state
 
 
 class Command(BaseCommand):
-    help = 'Queries peering routers for BGP related SNMP data'
+    help = 'Queries peering routers for BGP neighbour information'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -21,6 +22,9 @@ class Command(BaseCommand):
 
         # find our Network object
         me = models.Network.objects.get(asn=settings.MY_ASN)
+
+        # select which vrf to look for bgp sessions in
+        vrf = 'global'
 
         # create list of PeeringRouters and a totals counter
         rtrs = []
@@ -44,9 +48,29 @@ class Command(BaseCommand):
             count = Counter()
             totals['rtrs'] += 1
 
-            # collect cbgpPeer2Table via SNMP
-            self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
-            bgptable = get_bgp_state(rtr.hostname)
+            # try get bgp neighbors
+            self.stdout.write("Querying %s using napalm" % rtr.hostname )
+            try:
+                driver = get_network_driver(rtr.driver)
+                device = driver(hostname=rtr.hostname, **settings.NAPALM)
+                device.open()
+                bgp_neighbors = device.get_bgp_neighbors()
+                device.close()
+            except Exception as e:
+                self.stdout.write("error: %s" % e)
+                pass
+
+            if bgp_neighbors:
+                try:
+                    peers = bgp_neighbors[vrf]['peers']
+                except KeyError as e:
+                    peers = {}
+            else:
+                pass
+
+            # # collect cbgpPeer2Table via SNMP
+            # self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
+            # bgptable = get_bgp_state(rtr.hostname)
 
             # get all PeeringRouterIXInterfaces on router
             ifaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
@@ -86,15 +110,21 @@ class Command(BaseCommand):
                                 peer_netixlan=peer_netixlan, prngrtriface=iface
                             )
 
-                        # search for a bgptable entry
-                        bgpprng = None
-                        for entry in bgptable:
-                            if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
-                                 bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr4 and
-                                 bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
-                                # found a configured peering
-                                count['bgpprng4'] += 1
-                                bgpprng = bgptable[entry]
+                        # # search for a bgptable entry
+                        # bgpprng = None
+                        # for entry in bgptable:
+                        #     if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
+                        #          bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr4 and
+                        #          bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
+                        #         # found a configured peering
+                        #         count['bgpprng4'] += 1
+                        #         bgpprng = bgptable[entry]
+
+                        if prngsess.peer_netixlan.ipaddr4 in peers:
+                            count['bgpprng4'] += 1
+                            bgpprng = peers[prngsess.peer_netixlan.ipaddr4]
+                        else:
+                            bgpprng = None
 
                         # update PeeringSession from bgp peering state
                         self._update_state(prngsess, bgpprng)
@@ -124,15 +154,21 @@ class Command(BaseCommand):
                                 peer_netixlan=peer_netixlan, prngrtriface=iface
                             )
 
-                        # search for a bgptable entry 
-                        bgpprng = None
-                        for entry in bgptable:
-                            if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
-                                 bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr6 and
-                                 bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
-                                # found a configured peering
-                                count['bgpprng6'] += 1
-                                bgpprng = bgptable[entry]
+                        # # search for a bgptable entry
+                        # bgpprng = None
+                        # for entry in bgptable:
+                        #     if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
+                        #          bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr6 and
+                        #          bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
+                        #         # found a configured peering
+                        #         count['bgpprng6'] += 1
+                        #         bgpprng = bgptable[entry]
+
+                        if prngsess.peer_netixlan.ipaddr6 in peers:
+                            count['bgpprng6'] += 1
+                            bgpprng = peers[prngsess.peer_netixlan.ipaddr6]
+                        else:
+                            bgpprng = None
 
                         # update PeeringSession from bgp peering state
                         self._update_state(prngsess, bgpprng)
@@ -158,13 +194,25 @@ class Command(BaseCommand):
             if prngsess.provisioning_state != models.PeeringSession.PROV_COMPLETE:
                 prngsess.provisioning_state = models.PeeringSession.PROV_COMPLETE
                 changed = True
-            if prngsess.admin_state != bgpprng['cbgpPeer2AdminStatus']:
-                prngsess.admin_state = bgpprng['cbgpPeer2AdminStatus']
-                changed = True
-            if prngsess.operational_state != bgpprng['cbgpPeer2State']:
-                prngsess.operational_state = bgpprng['cbgpPeer2State']
-                changed = True
-            prngsess.accepted_prefixes = bgpprng['TotalAcceptedPrefixes']
+            # set admin_state
+            if bgpprng['is_enabled']:
+                if prngsess.admin_state != models.PeeringSession.ADMIN_START:
+                    prngsess.admin_state = models.PeeringSession.ADMIN_START
+                    changed = True
+            else:
+                if prngsess.admin_state != models.PeeringSession.ADMIN_STOP:
+                    prngsess.admin_state = models.PeeringSession.ADMIN_STOP
+                    changed = True
+            # set operational_state
+            if bgpprng['is_up']:
+                if prngsess.operational_state != models.PeeringSession.OPER_ESTABLISHED:
+                    prngsess.operational_state = models.PeeringSession.OPER_ESTABLISHED
+                    changed = True
+            else:
+                if prngsess.operational_state == models.PeeringSession.OPER_ESTABLISHED:
+                    prngsess.operational_state = models.PeeringSession.OPER_NONE
+                    changed = True
+            # prngsess.accepted_prefixes = bgpprng['TotalAcceptedPrefixes']
         else:
             # check if the peering session was previously provisioned, and reset if necessary
             if prngsess.provisioning_state != models.PeeringSession.PROV_NONE:
@@ -180,4 +228,3 @@ class Command(BaseCommand):
                 pass
             prngsess.state_changed = timezone.now()
         return changed
-

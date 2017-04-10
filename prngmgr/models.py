@@ -23,6 +23,7 @@ class PeeringRouter(models.Model):
     objects = PeeringRouterManager()
 
     hostname = models.CharField(max_length=20, unique=True)
+    driver = models.CharField(max_length=10, default='ios')
 
     def _local_sessions(self):
         return PeeringSession.objects.filter(prngrtriface__prngrtr=self.id)
