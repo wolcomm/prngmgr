@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from prngmgr import models, settings
 from napalm_base import get_network_driver
-# from prngmgr.snmp import get_bgp_state
 
 
 class Command(BaseCommand):
@@ -67,10 +66,6 @@ class Command(BaseCommand):
             else:
                 peers = {}
 
-            # # collect cbgpPeer2Table via SNMP
-            # self.stdout.write( "Querying %s via SNMP" % rtr.hostname )
-            # bgptable = get_bgp_state(rtr.hostname)
-
             # get all PeeringRouterIXInterfaces on router
             ifaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=rtr)
             for iface in ifaces:
@@ -101,33 +96,6 @@ class Command(BaseCommand):
                         if new:
                             count['newsess4'] += 1
 
-                        # # found an ipv4 session
-                        # prngsessions = models.PeeringSession.objects.filter(
-                        #     af=models.PeeringSession.AF_IPV4
-                        # ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
-                        # if prngsessions.exists():
-                        #
-                        #     # PeeringSession exists: retrieving it
-                        #     prngsess = prngsessions[0]
-                        #
-                        # else:
-                        #
-                        #     # PeeringSession doesn't exist: creating it
-                        #     prngsess = models.PeeringSession(
-                        #         af=models.PeeringSession.AF_IPV4,
-                        #         peer_netixlan=peer_netixlan, prngrtriface=iface
-                        #     )
-
-                        # # search for a bgptable entry
-                        # bgpprng = None
-                        # for entry in bgptable:
-                        #     if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
-                        #          bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr4 and
-                        #          bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
-                        #         # found a configured peering
-                        #         count['bgpprng4'] += 1
-                        #         bgpprng = bgptable[entry]
-
                         if str(prngsess.peer_netixlan.ipaddr4) in peers:
                             count['bgpprng4'] += 1
                             bgpprng = peers[str(prngsess.peer_netixlan.ipaddr4)]
@@ -154,32 +122,6 @@ class Command(BaseCommand):
 
                         if new:
                             count['newsess6'] += 1
-
-                        # # found an ipv6 session
-                        # prngsessions = models.PeeringSession.objects.filter(
-                        #     af=models.PeeringSession.AF_IPV6
-                        # ).filter(peer_netixlan=peer_netixlan).filter(prngrtriface=iface)
-                        # if prngsessions.exists():
-                        #
-                        #     # PeeringSession exists: retrieving it
-                        #     prngsess = prngsessions[0]
-                        # else:
-                        #
-                        #     # PeeringSession doesn't exist: creating it
-                        #     prngsess = models.PeeringSession(
-                        #         af=models.PeeringSession.AF_IPV6,
-                        #         peer_netixlan=peer_netixlan, prngrtriface=iface
-                        #     )
-
-                        # # search for a bgptable entry
-                        # bgpprng = None
-                        # for entry in bgptable:
-                        #     if ( bgptable[entry]['cbgpPeer2Type'] == prngsess.af and
-                        #          bgptable[entry]['cbgpPeer2RemoteAddr'] == prngsess.peer_netixlan.ipaddr6 and
-                        #          bgptable[entry]['cbgpPeer2RemoteAs'] == prngsess.peer_netixlan.asn ):
-                        #         # found a configured peering
-                        #         count['bgpprng6'] += 1
-                        #         bgpprng = bgptable[entry]
 
                         if str(prngsess.peer_netixlan.ipaddr6) in peers:
                             count['bgpprng6'] += 1
