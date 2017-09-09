@@ -6,7 +6,8 @@ from django_peeringdb.models.concrete import Network
 
 from prngmgr import settings
 
-me = Network.objects.get(asn=settings.MY_ASN)
+def me():
+    return Network.objects.get(asn=settings.MY_ASN)
 
 
 class IndexView(TemplateView):
@@ -18,7 +19,7 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['me'] = me
+        context['me'] = me()
         return context
 
 

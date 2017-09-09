@@ -4,8 +4,6 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django_peeringdb.models.concrete import Network
 from prngmgr import settings, forms, models
 
-me = Network.objects.get(asn=settings.MY_ASN)
-
 
 @login_required
 def interfaces(request, if_id, if_delete):

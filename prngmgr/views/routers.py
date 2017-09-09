@@ -6,8 +6,6 @@ from django_peeringdb.models.concrete import Network
 from prngmgr import settings, forms, models
 from prngmgr.views import utils
 
-me = Network.objects.get(asn=settings.MY_ASN)
-
 
 @login_required
 def routers(request, rtr_id):
