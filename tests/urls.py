@@ -1,4 +1,4 @@
-# Copyright 2017 Workonline Communications (Pty) Ltd. All rights reserved.
+# Copyright 2016-2017 Workonline Communications (Pty) Ltd. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -12,9 +12,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 """URLConf for the prngmgr test suite."""
+
 from __future__ import print_function
 from __future__ import unicode_literals
 
 from django.conf.urls import include, url
 
-urlpatterns = []
+urlpatterns = [
+    url(r'^', include('prngmgr.urls'))
+]
