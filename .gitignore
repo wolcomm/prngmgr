@@ -97,9 +97,3 @@ ENV/
 # PyDev project settings
 .project
 .pydevproject
-
-# Other settings
-/DjangoProject_prngmgr/
-/templates/
-db.sqlite3
-manage.py
