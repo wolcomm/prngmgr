@@ -14,34 +14,45 @@
 """Datatable handling module for prngmgr API."""
 
 import re
+
 from collections import defaultdict
+
 from django.db.models import Q, QuerySet
-from rest_framework import status
-from rest_framework import serializers
+
+from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 
 class TableDefView(object):
+    """Table definition view class."""
+
     def __init__(self, columns=None):
+        """Initialise view instance."""
         if not isinstance(columns, list):
             raise TypeError("%s should be a list of column definitions")
         self._response = Response(columns)
 
     @property
     def response(self):
+        """Get query response."""
         return self._response
 
 
 class QueryView(object):
-    def __init__(self, query_set=None, serializer_class=None, query_params=None,
-                 static_filter=None, static_exclude=None, static_order=None):
+    """Query view class."""
+
+    def __init__(self, query_set=None, serializer_class=None,
+                 query_params=None, static_filter=None, static_exclude=None,
+                 static_order=None):
+        """Initialise view instance."""
         if not isinstance(query_params, QueryParams):
             raise TypeError("%s not an instance of QueryParams" % query_params)
         if not isinstance(query_set, QuerySet):
             raise TypeError("%s not an instance of QuerySet" % query_set)
         if not issubclass(serializer_class, serializers.BaseSerializer):
-            raise TypeError("%s not a subclass of BaseSerializer" % serializer_class)
+            raise TypeError("%s not a subclass of BaseSerializer"
+                            % serializer_class)
         query = query_params.query
         if not query:
             self._response = Response(status=status.HTTP_400_BAD_REQUEST)
@@ -79,7 +90,8 @@ class QueryView(object):
             page_start = query['start']
             page_end = page_start + query['length']
             page = ordered[page_start:page_end]
-            serializer = serializer_class(page, many=True, context={'request': query_params.request})
+            serializer = serializer_class(
+                page, many=True, context={'request': query_params.request})
             data = serializer.data
             response = {
                 'draw': query['draw'],
@@ -91,27 +103,18 @@ class QueryView(object):
 
     @property
     def response(self):
+        """Get query response."""
         return self._response
 
 
 class QueryParams(object):
+    """Query parameters class."""
+
     _param_re = re.compile(r'^(\w+)')
     _index_re = re.compile(r'\[(\w+)\]')
 
-    def _column_dict(self):
-        obj = {
-            'data': None,
-            'name': None,
-            'searchable': None,
-            'orderable': None,
-            'search': {
-                'value': None,
-                'regex': None,
-            }
-        }
-        return obj
-
     def __init__(self, request=None):
+        """Initialise new instance."""
         if not isinstance(request, Request):
             raise TypeError("%s is not a Request object" % request)
         self._request = request
@@ -168,9 +171,11 @@ class QueryParams(object):
                             raise ValueError("Couldn't parse key %s" % key)
                     elif indices[1] == 'search':
                         if indices[2] == 'value':
-                            self._dict[param][i][indices[1]][indices[2]] = str(val)
+                            self._dict[param][i][indices[1]][indices[2]] = \
+                                str(val)
                         elif indices[2] == 'regex':
-                            self._dict[param][i][indices[1]][indices[2]] = bool(val)
+                            self._dict[param][i][indices[1]][indices[2]] = \
+                                bool(val)
                         else:
                             raise ValueError("Couldn't parse key %s" % key)
                     else:
@@ -180,10 +185,26 @@ class QueryParams(object):
             else:
                 raise ValueError("Couldn't parse key %s" % key)
 
+    def _column_dict(self):
+        """Get column dict."""
+        obj = {
+            'data': None,
+            'name': None,
+            'searchable': None,
+            'orderable': None,
+            'search': {
+                'value': None,
+                'regex': None,
+            }
+        }
+        return obj
+
     @property
     def query(self):
+        """Get query."""
         return self._dict
 
     @property
     def request(self):
+        """Get request."""
         return self._request

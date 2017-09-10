@@ -16,12 +16,13 @@
 
 from __future__ import unicode_literals
 
-from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    """Initial migrations for prngmgr models."""
 
     initial = True
 
@@ -33,31 +34,63 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PeeringRouter',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('hostname', models.CharField(max_length=20, unique=True)),
             ],
         ),
         migrations.CreateModel(
             name='PeeringRouterIXInterface',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('netixlan', models.OneToOneField(default=0, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='prngrtriface_set', to='django_peeringdb.NetworkIXLan')),
-                ('prngrtr', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, related_name='prngrtriface_set', to='prngmgr.PeeringRouter')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
+                ('netixlan', models.OneToOneField(
+                    default=0, null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='prngrtriface_set',
+                    to='django_peeringdb.NetworkIXLan')),
+                ('prngrtr', models.ForeignKey(
+                    default=0,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='prngrtriface_set',
+                    to='prngmgr.PeeringRouter')),
             ],
         ),
         migrations.CreateModel(
             name='PeeringSession',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('provisioning_state', models.IntegerField(choices=[(0, None), (1, b'pending'), (2, b'complete')], default=0)),
-                ('admin_state', models.IntegerField(choices=[(0, None), (1, b'stop'), (2, b'start')], default=0)),
-                ('operational_state', models.IntegerField(choices=[(0, None), (1, b'idle'), (2, b'connect'), (3, b'active'), (4, b'opensent'), (5, b'openconfirm'), (6, b'established')], default=0)),
-                ('af', models.IntegerField(choices=[(0, b'unknown'), (1, b'ipv4'), (2, b'ipv6')], default=0)),
-                ('accepted_prefixes', models.IntegerField(default=None, null=True)),
-                ('previous_state', models.CharField(default=b'None', max_length=12)),
-                ('state_changed', models.DateTimeField(default=django.utils.timezone.now)),
-                ('peer_netixlan', models.ForeignKey(default=0, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='prngsess_set', to='django_peeringdb.NetworkIXLan')),
-                ('prngrtriface', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, related_name='prngsess_set', to='prngmgr.PeeringRouterIXInterface')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
+                ('provisioning_state', models.IntegerField(
+                    choices=[(0, None), (1, b'pending'), (2, b'complete')],
+                    default=0)),
+                ('admin_state', models.IntegerField(
+                    choices=[(0, None), (1, b'stop'), (2, b'start')],
+                    default=0)),
+                ('operational_state', models.IntegerField(
+                    choices=[
+                        (0, None), (1, b'idle'), (2, b'connect'),
+                        (3, b'active'), (4, b'opensent'),
+                        (5, b'openconfirm'), (6, b'established')],
+                    default=0)),
+                ('af', models.IntegerField(
+                    choices=[(0, b'unknown'), (1, b'ipv4'), (2, b'ipv6')],
+                    default=0)),
+                ('accepted_prefixes', models.IntegerField(default=None,
+                                                          null=True)),
+                ('previous_state', models.CharField(default=b'None',
+                                                    max_length=12)),
+                ('state_changed', models.DateTimeField(
+                    default=django.utils.timezone.now)),
+                ('peer_netixlan', models.ForeignKey(
+                    default=0, null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='prngsess_set',
+                    to='django_peeringdb.NetworkIXLan')),
+                ('prngrtriface', models.ForeignKey(
+                    default=0, on_delete=django.db.models.deletion.CASCADE,
+                    related_name='prngsess_set',
+                    to='prngmgr.PeeringRouterIXInterface')),
             ],
         ),
         migrations.CreateModel(

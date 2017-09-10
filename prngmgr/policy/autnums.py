@@ -20,7 +20,10 @@ _asdot_regex = re.compile(r'^(\d+)\.(\d+)$')
 
 
 class AutNum(object):
+    """AutNum policy object class."""
+
     def __init__(self, asn=None):
+        """Init new AutNum instance."""
         try:
             m = _as_regex.match(asn)
             if m:
@@ -30,10 +33,7 @@ class AutNum(object):
                 asn = int(m.group(1)) * 2**16 + int(m.group(2))
         except TypeError:
             pass
-        try:
-            asn = int(asn)
-        except:
-            raise
+        asn = int(asn)
         if 0 < asn < 2 ** 32:
             self._autnum = asn
         else:
@@ -41,17 +41,21 @@ class AutNum(object):
 
     @property
     def autnum(self):
+        """Get ASN."""
         return self._autnum
 
     @property
     def is_4byte(self):
+        """Check whether the ASN is a 4 byte ASN."""
         if self.autnum < 2**16:
             return False
         else:
             return True
 
     def __str__(self):
+        """Render as string."""
         return str(self.autnum)
 
     def __unicode__(self):
+        """Render as unicode."""
         return self.__str__()

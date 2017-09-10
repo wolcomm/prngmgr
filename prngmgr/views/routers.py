@@ -74,13 +74,18 @@ def routers(request, rtr_id):
                     prngrtr=router)
                 for interface in interfaces:
                     children[0]['forms'].append({
-                        'post': reverse('prngmgr-interfaces', kwargs={'if_id': interface.id, 'if_delete': '/delete'}),
-                        'form': forms.PeeringRouterIXInterfaceForm(instance=interface),
-                        'submit': {'class': 'btn btn-danger', 'value': 'Delete'},
+                        'post': reverse('prngmgr-interfaces',
+                                        kwargs={'if_id': interface.id,
+                                                'if_delete': '/delete'}),
+                        'form': forms.PeeringRouterIXInterfaceForm(
+                            instance=interface),
+                        'submit': {'class': 'btn btn-danger',
+                                   'value': 'Delete'},
                     })
                 children[0]['forms'].append({
                     'post': reverse('prngmgr-interfaces', kwargs={'if_id': 0}),
-                    'form': forms.NewPeeringRouterIXInterfaceForm(initial={'prngrtr': router.id}),
+                    'form': forms.NewPeeringRouterIXInterfaceForm(
+                        initial={'prngrtr': router.id}),
                     'submit': {'class': 'btn btn-primary', 'value': 'Add'},
                 })
             context['form'] = {
@@ -89,7 +94,8 @@ def routers(request, rtr_id):
                 'info': {
                     'title': 'Peering Router',
                     'key': key,
-                    'post': reverse('prngmgr-routers', kwargs={'rtr_id': rtr_id}),
+                    'post': reverse('prngmgr-routers',
+                                    kwargs={'rtr_id': rtr_id}),
                 },
             }
         else:
@@ -114,20 +120,23 @@ def routers(request, rtr_id):
             }
             routers = models.PeeringRouter.objects.all()
             for router in routers:
-                interfaces = models.PeeringRouterIXInterface.objects.filter(prngrtr=router)
-                sessions = models.PeeringSession.objects.filter(prngrtriface__prngrtr=router)
+                interfaces = models.PeeringRouterIXInterface.objects.filter(
+                    prngrtr=router)
+                sessions = models.PeeringSession.objects.filter(
+                    prngrtriface__prngrtr=router)
                 calculated = utils.render_alerts({
                     'count': {
                         'interfaces': interfaces.count(),
                         'possible': sessions.count(),
-                        'provisioned': sessions.filter(provisioning_state=models.PeeringSession.PROV_COMPLETE).count(),
-                        'established': sessions.filter(operational_state=models.PeeringSession.OPER_ESTABLISHED).count(),
+                        'provisioned': sessions.filter(provisioning_state=models.PeeringSession.PROV_COMPLETE).count(),  # noqa
+                        'established': sessions.filter(operational_state=models.PeeringSession.OPER_ESTABLISHED).count(),  # noqa
                     },
                 })
                 row = {'fields': []}
                 row['fields'].append({
                     'display': router.hostname,
-                    'link': reverse('prngmgr-routers', kwargs={'rtr_id': router.id}),
+                    'link': reverse('prngmgr-routers',
+                                    kwargs={'rtr_id': router.id}),
                 })
                 row['fields'].append({
                     'display': calculated['count']['interfaces'],

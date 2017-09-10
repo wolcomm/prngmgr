@@ -17,36 +17,43 @@ import ipaddress
 
 
 class Prefix(object):
+    """Prefix policy object class."""
+
     def __init__(self, prefix=None, strict=False):
+        """Init new Prefix instance."""
         if isinstance(prefix, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
             self._prefix = prefix
         else:
-            try:
-                self._prefix = ipaddress.ip_network(unicode(prefix), strict=strict)
-            except:
-                raise
+            self._prefix = ipaddress.ip_network(unicode(prefix), strict=strict)
 
     @property
     def prefix(self):
+        """Get prefix."""
         return self._prefix
 
 
 class PrefixRange(Prefix):
-    def __init__(self, prefix=None, min_length=None, max_length=None, greedy=False, strict=False):
+    """Prefix range policy object class."""
+
+    def __init__(self, prefix=None, min_length=None, max_length=None,
+                 greedy=False, strict=False):
+        """Init new PrefixRange instance."""
         super(PrefixRange, self).__init__(prefix=prefix, strict=False)
         prefix_length = self.prefix.prefixlen
         if min_length is not None:
             if min_length > prefix_length:
                 self._min_length = min_length
             else:
-                raise ValueError("min_length should be greater than prefix length")
+                raise ValueError("min_length should be greater \
+                                  than prefix length")
         else:
             min_length = prefix_length
         if max_length is not None:
             if max_length >= min_length:
                 self._max_length = max_length
             else:
-                raise ValueError("max_length should be greater than or equal to both prefix length and min_length")
+                raise ValueError("max_length should be greater than or equal \
+                                  to both prefix length and min_length")
         else:
             if greedy:
                 self._max_length = self.prefix.max_prefixlen
@@ -55,18 +62,19 @@ class PrefixRange(Prefix):
 
 
 class PrefixSet(object):
+    """Prefix set policy object class."""
+
     def __init__(self, name=None, prefixes=[]):
+        """Init new PrefixSet instance."""
         self._prefixes = []
         for prefix in prefixes:
             if not isinstance(prefix, Prefix):
-                try:
-                    self._prefixes.append(Prefix(prefix=prefix))
-                except:
-                    raise
+                self._prefixes.append(Prefix(prefix=prefix))
             else:
                 self._prefixes.append(prefix)
 
     def append(self, p=None):
+        """Append entry to PrefixSet."""
         if isinstance(p, Prefix):
             self._prefixes.append(p)
         else:

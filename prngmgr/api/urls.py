@@ -13,9 +13,11 @@
 # the License.
 """URLconf module for prngmgr API."""
 
-from django.conf.urls import url, include
-from rest_framework.routers import DefaultRouter
+from django.conf.urls import include, url
+
 from prngmgr.api import views
+
+from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()

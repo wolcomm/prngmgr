@@ -34,17 +34,22 @@ def interfaces(request, if_id, if_delete):
                 form = forms.PeeringRouterIXInterfaceForm(request.POST)
             else:
                 try:
-                    interface = models.PeeringRouterIXInterface.objects.get(id=if_id)
+                    interface = models.PeeringRouterIXInterface.objects.get(
+                        id=if_id)
                 except Exception:
                     return HttpResponseNotFound(if_id)
                 if if_delete:
                     router = interface.prngrtr
-                    models.PeeringRouterIXInterface.objects.filter(id=if_id).delete()
-                    return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
-                form = forms.PeeringRouterIXInterfaceForm(request.POST, instance=interface)
+                    models.PeeringRouterIXInterface.objects.filter(
+                        id=if_id).delete()
+                    return HttpResponseRedirect(reverse(
+                        'prngmgr-routers', kwargs={'rtr_id': router.id}))
+                form = forms.PeeringRouterIXInterfaceForm(request.POST,
+                                                          instance=interface)
             interface = form.save()
             router = interface.prngrtr
-            return HttpResponseRedirect(reverse('prngmgr-routers', kwargs={'rtr_id': router.id}))
+            return HttpResponseRedirect(reverse('prngmgr-routers',
+                                                kwargs={'rtr_id': router.id}))
         else:
             return HttpResponseRedirect(reverse('prngmgr-routers'))
     else:
