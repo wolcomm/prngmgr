@@ -15,9 +15,15 @@
 
 from django.db import models
 from django.utils import timezone
-from django_handleref.models import HandleRefModel
+
 from django_inet.models import IPAddressField
-from django_peeringdb.models.concrete import *
+
+from django_peeringdb.models.concrete import (
+    InternetExchange,
+    Network,
+    NetworkIXLan,
+)
+
 from prngmgr import settings
 
 ALERT_NONE = 0
@@ -27,7 +33,10 @@ ALERT_DANGER = 3
 
 
 class PeeringRouterManager(models.Manager):
+    """Custom manager for PeeringRouter model."""
+
     def get_queryset(self):
+        """Get queryset with count annotations."""
         query_set = super(PeeringRouterManager, self).get_queryset()
         return query_set.annotate(
             peering_interfaces=models.Count('prngrtriface_set', distinct=True)
@@ -35,6 +44,8 @@ class PeeringRouterManager(models.Manager):
 
 
 class PeeringRouter(models.Model):
+    """Peering router model."""
+
     objects = PeeringRouterManager()
 
     hostname = models.CharField(max_length=20, unique=True)
@@ -47,42 +58,54 @@ class PeeringRouter(models.Model):
     possible_sessions = property(_possible_sessions)
 
     def _provisioned_sessions(self):
-        return self._local_sessions().filter(provisioning_state=PeeringSession.PROV_COMPLETE).count()
+        return self._local_sessions().filter(
+            provisioning_state=PeeringSession.PROV_COMPLETE).count()
     provisioned_sessions = property(_provisioned_sessions)
 
     def _established_sessions(self):
-        return self._local_sessions().filter(operational_state=PeeringSession.OPER_ESTABLISHED).count()
+        return self._local_sessions().filter(
+            operational_state=PeeringSession.OPER_ESTABLISHED).count()
     established_sessions = property(_established_sessions)
 
 
 class PeeringRouterIXInterface(models.Model):
+    """Peering router interface model."""
+
     netixlan = models.OneToOneField(
         NetworkIXLan,
         default=0, related_name="prngrtriface_set", null=True,
         limit_choices_to={'net__asn': settings.MY_ASN}
     )
-    prngrtr = models.ForeignKey(PeeringRouter, default=0, related_name="prngrtriface_set")
+    prngrtr = models.ForeignKey(PeeringRouter, default=0,
+                                related_name="prngrtriface_set")
 
 
 class PeeringSessionManager(models.Manager):
+    """Custom manager for PeeringRouter model."""
+
     def get_queryset(self):
+        """Get queryset with custom annotations."""
         base_query_set = super(PeeringSessionManager, self).get_queryset()
         query_set = base_query_set.annotate(
             session_state=models.Case(
                 models.When(provisioning_state=2, then=models.Case(
                     models.When(admin_state=2, then=models.Case(
-                        models.When(operational_state=6, then=models.Value('Up')),
+                        models.When(operational_state=6,
+                                    then=models.Value('Up')),
                         default=models.Value('Down')
                     )),
                     default=models.Value('Admin Down')
                 )),
-                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                models.When(provisioning_state=1,
+                            then=models.Value('Provisioning')),
                 default=models.Value('None'),
                 output_field=models.CharField()
             ),
             local_address=models.Case(
-                models.When(af=1, then=models.F('prngrtriface__netixlan__ipaddr4')),
-                models.When(af=2, then=models.F('prngrtriface__netixlan__ipaddr6')),
+                models.When(af=1,
+                            then=models.F('prngrtriface__netixlan__ipaddr4')),
+                models.When(af=2,
+                            then=models.F('prngrtriface__netixlan__ipaddr6')),
                 default=None,
                 output_field=IPAddressField()
             ),
@@ -100,23 +123,26 @@ class PeeringSessionManager(models.Manager):
             ),
             ixp_name=models.F('prngrtriface__netixlan__ixlan__ix__name'),
             router_hostname=models.F('prngrtriface__prngrtr__hostname'),
-            remote_network_name = models.F('peer_netixlan__net__name'),
-            remote_network_asn = models.F('peer_netixlan__net__asn')
+            remote_network_name=models.F('peer_netixlan__net__name'),
+            remote_network_asn=models.F('peer_netixlan__net__asn')
         )
         return query_set
 
     def status_summary(self):
+        """Get interface status summary."""
         base_query_set = super(PeeringSessionManager, self).get_queryset()
         summary = base_query_set.annotate(
             label=models.Case(
                 models.When(provisioning_state=2, then=models.Case(
                     models.When(admin_state=2, then=models.Case(
-                        models.When(operational_state=6, then=models.Value('Up')),
+                        models.When(operational_state=6,
+                                    then=models.Value('Up')),
                         default=models.Value('Down')
                     )),
                     default=models.Value('Admin Down')
                 )),
-                models.When(provisioning_state=1, then=models.Value('Provisioning')),
+                models.When(provisioning_state=1,
+                            then=models.Value('Provisioning')),
                 default=models.Value('None'),
                 output_field=models.CharField()
             )).values('label').annotate(value=models.Count('label'))
@@ -124,6 +150,8 @@ class PeeringSessionManager(models.Manager):
 
 
 class PeeringSession(models.Model):
+    """Peering session model."""
+
     objects = PeeringSessionManager()
 
     PROV_NONE = 0
@@ -134,7 +162,8 @@ class PeeringSession(models.Model):
         (PROV_PENDING, 'pending'),
         (PROV_COMPLETE, 'complete'),
     )
-    provisioning_state = models.IntegerField(choices=PROV_OPTIONS, default=PROV_NONE)
+    provisioning_state = models.IntegerField(choices=PROV_OPTIONS,
+                                             default=PROV_NONE)
 
     def _get_provisioning_state_alert(self):
         if self.provisioning_state == self.PROV_COMPLETE:
@@ -153,7 +182,8 @@ class PeeringSession(models.Model):
         (ADMIN_STOP, 'stop'),
         (ADMIN_START, 'start'),
     )
-    admin_state = models.IntegerField(choices=ADMIN_OPTIONS, default=ADMIN_NONE)
+    admin_state = models.IntegerField(choices=ADMIN_OPTIONS,
+                                      default=ADMIN_NONE)
 
     def _get_admin_state_alert(self):
         if self.admin_state == self.ADMIN_START:
@@ -180,7 +210,8 @@ class PeeringSession(models.Model):
         (OPER_OPENCONFIRM, "openconfirm"),
         (OPER_ESTABLISHED, "established"),
     )
-    operational_state = models.IntegerField(choices=OPER_OPTIONS, default=OPER_NONE)
+    operational_state = models.IntegerField(choices=OPER_OPTIONS,
+                                            default=OPER_NONE)
 
     def _get_operational_state_alert(self):
         if self.operational_state == self.OPER_ESTABLISHED:
@@ -204,23 +235,35 @@ class PeeringSession(models.Model):
     accepted_prefixes = models.IntegerField(null=True, default=None)
     previous_state = models.CharField(max_length=12, default='None')
     state_changed = models.DateTimeField(default=timezone.now)
-    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0, related_name="prngsess_set", null=True)
-    prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0, related_name="prngsess_set")
+    peer_netixlan = models.ForeignKey(NetworkIXLan, default=0,
+                                      related_name="prngsess_set", null=True)
+    prngrtriface = models.ForeignKey(PeeringRouterIXInterface, default=0,
+                                     related_name="prngsess_set")
 
     class Meta:
+        """Meta class."""
+
         unique_together = ("af", "prngrtriface", "peer_netixlan")
 
 
 class InternetExchangeProxyManager(models.Manager):
+    """Custom manager for InternetExchangeProxy model."""
+
     def get_queryset(self):
+        """Get queryset with custom annotations."""
         query_set = super(InternetExchangeProxyManager, self).get_queryset()
         return query_set.annotate(
-            participants=models.Count('ixlan_set__netixlan_set__asn', distinct=True),
+            participants=models.Count('ixlan_set__netixlan_set__asn',
+                                      distinct=True),
         )
 
 
 class InternetExchangeProxy(InternetExchange):
+    """Proxy for InternetExchange model."""
+
     class Meta:
+        """Meta class."""
+
         proxy = True
 
     objects = InternetExchangeProxyManager()
@@ -233,22 +276,31 @@ class InternetExchangeProxy(InternetExchange):
     possible_sessions = property(_possible_sessions)
 
     def _provisioned_sessions(self):
-        return self._local_sessions().filter(provisioning_state=PeeringSession.PROV_COMPLETE).count()
+        return self._local_sessions().filter(
+            provisioning_state=PeeringSession.PROV_COMPLETE).count()
     provisioned_sessions = property(_provisioned_sessions)
 
     def _established_sessions(self):
-        return self._local_sessions().filter(operational_state=PeeringSession.OPER_ESTABLISHED).count()
+        return self._local_sessions().filter(
+            operational_state=PeeringSession.OPER_ESTABLISHED).count()
     established_sessions = property(_established_sessions)
 
 
 class NetworkProxyManager(models.Manager):
+    """Custom manager for InternetExchangeProxy model."""
+
     def get_queryset(self):
+        """Get queryset with custom annotations."""
         query_set = super(NetworkProxyManager, self).get_queryset()
         return query_set
 
 
 class NetworkProxy(Network):
+    """Proxy for Network model."""
+
     class Meta:
+        """Meta class."""
+
         proxy = True
 
     objects = NetworkProxyManager()
@@ -261,9 +313,11 @@ class NetworkProxy(Network):
     possible_sessions = property(_possible_sessions)
 
     def _provisioned_sessions(self):
-        return self._local_sessions().filter(provisioning_state=PeeringSession.PROV_COMPLETE).count()
+        return self._local_sessions().filter(
+            provisioning_state=PeeringSession.PROV_COMPLETE).count()
     provisioned_sessions = property(_provisioned_sessions)
 
     def _established_sessions(self):
-        return self._local_sessions().filter(operational_state=PeeringSession.OPER_ESTABLISHED).count()
+        return self._local_sessions().filter(
+            operational_state=PeeringSession.OPER_ESTABLISHED).count()
     established_sessions = property(_established_sessions)

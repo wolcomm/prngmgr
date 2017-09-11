@@ -17,35 +17,46 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+
 from django_peeringdb.models.concrete import Network
 
 from prngmgr import settings
 
+
 def me():
+    """Return MY_ASN."""
     return Network.objects.get(asn=settings.MY_ASN)
 
 
 class IndexView(TemplateView):
+    """Index view."""
+
     template_name = 'prngmgr/index.html'
 
     @method_decorator(login_required(login_url='/auth/login/'))
     def dispatch(self, *args, **kwargs):
+        """Handle request dispatch."""
         return super(IndexView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return context for template."""
         context = super(IndexView, self).get_context_data(**kwargs)
         context['me'] = me()
         return context
 
 
 class NetworksView(TemplateView):
+    """Network view."""
+
     template_name = 'prngmgr/ajax_table.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        """Handle request dispatch."""
         return super(NetworksView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return context for template."""
         context = super(NetworksView, self).get_context_data(**kwargs)
         context['table'] = {
             'name': 'networks',
@@ -59,13 +70,17 @@ class NetworksView(TemplateView):
 
 
 class InternetExchangeView(TemplateView):
+    """InternetExchange view."""
+
     template_name = 'prngmgr/ajax_table.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        """Handle request dispatch."""
         return super(InternetExchangeView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return context for template."""
         context = super(InternetExchangeView, self).get_context_data(**kwargs)
         context['table'] = {
             'name': 'ixps',
@@ -79,13 +94,17 @@ class InternetExchangeView(TemplateView):
 
 
 class PeeringSessionsView(TemplateView):
+    """PeeringSession view."""
+
     template_name = 'prngmgr/ajax_table.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        """Handle request dispatch."""
         return super(PeeringSessionsView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return context for template."""
         context = super(PeeringSessionsView, self).get_context_data(**kwargs)
         context['table'] = {
             'name': 'sessions',
@@ -99,13 +118,17 @@ class PeeringSessionsView(TemplateView):
 
 
 class PeeringRoutersView(TemplateView):
+    """PeeringRouter view."""
+
     template_name = 'prngmgr/ajax_table.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        """Handle request dispatch."""
         return super(PeeringRoutersView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return context for template."""
         context = super(PeeringRoutersView, self).get_context_data(**kwargs)
         context['table'] = {
             'name': 'routers',

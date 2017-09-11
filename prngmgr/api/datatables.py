@@ -42,7 +42,7 @@ class TableDefView(object):
 class QueryView(object):
     """Query view class."""
 
-    def __init__(self, query_set=None, serializer_class=None,
+    def __init__(self, query_set=None, serializer_class=None,  # noqa
                  query_params=None, static_filter=None, static_exclude=None,
                  static_order=None):
         """Initialise view instance."""
@@ -113,7 +113,7 @@ class QueryParams(object):
     _param_re = re.compile(r'^(\w+)')
     _index_re = re.compile(r'\[(\w+)\]')
 
-    def __init__(self, request=None):
+    def __init__(self, request=None):  # noqa
         """Initialise new instance."""
         if not isinstance(request, Request):
             raise TypeError("%s is not a Request object" % request)

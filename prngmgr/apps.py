@@ -19,4 +19,6 @@ from django.apps import AppConfig
 
 
 class PrngmgrConfig(AppConfig):
+    """AppConfig class for prngmgr."""
+
     name = 'prngmgr'

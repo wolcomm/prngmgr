@@ -22,6 +22,7 @@ requirements = open('packaging/requirements.txt').read().split("\n")
 description = 'Django webapp for peering session management \
                using PeeringDB API'
 
+
 def readme():
     """Read README file."""
     with open('README.rst') as f:

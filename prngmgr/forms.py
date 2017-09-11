@@ -13,60 +13,82 @@
 # the License.
 """Forms module for prngmgr."""
 
-from django.forms import ModelForm, ModelChoiceField, CharField
-from django.forms.widgets import TextInput, HiddenInput
+from django.forms import CharField, ModelChoiceField, ModelForm
+from django.forms.widgets import HiddenInput, TextInput
+
 from django_peeringdb.models import concrete as pdb_models
-from prngmgr import models
-from prngmgr.settings import *
+
+from prngmgr import models, settings
 
 
 class NetworkIXLanHiddenWidget(TextInput):
+    """Custom widget class."""
+
     def __init__(self, attrs=None):
+        """Init new instance."""
         if attrs:
             attrs.update(hidden=True)
         else:
             attrs = dict(hidden=True)
-        super(NetworkIXLanHiddenWidget,self).__init__(attrs)
+        super(NetworkIXLanHiddenWidget, self).__init__(attrs)
 
     def render(self, name, value, attrs=None):
+        """Render HTML."""
         netixlan = pdb_models.NetworkIXLan.objects.get(id=value)
-        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
+        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4,
+                                     netixlan.ipaddr6)
         html = "%s<i>%s</i>" % (
             super(NetworkIXLanHiddenWidget, self).render(name, value, attrs),
             label
         )
         return html
 
+
 class NetworkIXLanChoiceField(ModelChoiceField):
+    """NetworkIXLan choice field."""
+
     def label_from_instance(self, netixlan):
-        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4, netixlan.ipaddr6)
+        """Render label."""
+        label = "%s ( %s // %s )" % (netixlan.ixlan.ix.name, netixlan.ipaddr4,
+                                     netixlan.ipaddr6)
         return label
 
+
 class PeeringRouterForm(ModelForm):
+    """Form for PeeringRouter model."""
+
     class Meta:
+        """Meta class."""
+
         model = models.PeeringRouter
         fields = ['hostname']
 
+
 class PeeringRouterIXInterfaceForm(ModelForm):
+    """Form for PeeringRouterIXInterface model."""
+
     netixlan = CharField(
         label='IXP Interface',
         widget=NetworkIXLanHiddenWidget
     )
+
     class Meta:
+        """Meta class."""
+
         model = models.PeeringRouterIXInterface
         fields = ['prngrtr', 'netixlan']
         widgets = {
             'prngrtr': HiddenInput,
         }
 
+
 class NewPeeringRouterIXInterfaceForm(PeeringRouterIXInterfaceForm):
+    """Form for new PeeringRouterIXInterface model entry."""
+
     available = pdb_models.NetworkIXLan.objects.filter(
-        net__asn=MY_ASN
+        net__asn=settings.MY_ASN
     ).exclude(
         id__in=models.PeeringRouterIXInterface.objects.all().values('netixlan')
     )
-    netixlan = NetworkIXLanChoiceField(
-        queryset=available,
-        # queryset=NetworkIXLan.objects.filter(net__asn=MY_ASN),
-        label='IXP Interface'
-    )
+    netixlan = NetworkIXLanChoiceField(queryset=available,
+                                       label='IXP Interface')

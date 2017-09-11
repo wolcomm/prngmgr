@@ -37,7 +37,7 @@ class Command(BaseCommand):
             help='Query specified router only',
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa
         """Handle command request."""
         # find our Network object
         me = models.Network.objects.get(asn=settings.MY_ASN)

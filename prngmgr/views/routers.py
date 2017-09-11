@@ -27,7 +27,7 @@ from prngmgr import forms, models
 from prngmgr.views import utils
 
 
-@login_required
+@login_required  # noqa
 def routers(request, rtr_id):
     """Render routers view."""
     context = {
