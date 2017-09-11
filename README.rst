@@ -1,4 +1,4 @@
-|PyPI| |Build Status|
+|PyPI| |Build Status| |Requirements Status|
 
 PrngMgr
 =======
@@ -20,3 +20,6 @@ Features
 
 .. |Build Status| image:: https://travis-ci.org/wolcomm/prngmgr.svg?branch=master
    :target: https://travis-ci.org/wolcomm/prngmgr
+
+.. |Requirements Status| image:: https://requires.io/github/wolcomm/prngmgr/requirements.svg?branch=master
+    :target: https://requires.io/github/wolcomm/prngmgr/requirements/?branch=master
