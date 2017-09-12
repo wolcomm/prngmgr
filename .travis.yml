@@ -19,6 +19,9 @@ matrix:
     - python: "3.6"
       env: DJANGO=1.10
   allow_failures:
+    - python: "3.4"
+    - python: "3.5"
+    - python: "3.6"
     - env: DJANGO=master
 install:
   - pip install -U pip
