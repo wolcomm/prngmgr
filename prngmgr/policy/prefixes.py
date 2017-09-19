@@ -24,7 +24,7 @@ class Prefix(object):
         if isinstance(prefix, (ipaddress.IPv4Network, ipaddress.IPv6Network)):
             self._prefix = prefix
         else:
-            self._prefix = ipaddress.ip_network(unicode(prefix), strict=strict)
+            self._prefix = ipaddress.ip_network(prefix, strict=strict)
 
     @property
     def prefix(self):
