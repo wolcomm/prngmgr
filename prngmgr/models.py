@@ -24,6 +24,8 @@ from django_peeringdb.models.concrete import (
     NetworkIXLan,
 )
 
+import napalm
+
 from prngmgr import settings
 
 ALERT_NONE = 0
@@ -49,6 +51,19 @@ class PeeringRouter(models.Model):
     objects = PeeringRouterManager()
 
     hostname = models.CharField(max_length=20, unique=True)
+
+    @property
+    def bgp_neighbors(self):
+        """Get BGP session info using napalm."""
+        try:
+            driver_name = self.device_driver
+        except AttributeError:
+            driver_name = settings.DEFAULT_DRIVER
+        driver = napalm.get_network_driver(driver_name)
+        with driver(hostname=self.hostname, username=settings.NAPALM_USERNAME,
+                    password=settings.NAPALM_PASSWORD) as device:
+            neighbors = device.get_bgp_neighbors()
+        return neighbors
 
     def _local_sessions(self):
         return PeeringSession.objects.filter(prngrtriface__prngrtr=self.id)

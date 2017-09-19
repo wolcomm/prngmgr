@@ -1,4 +1,5 @@
-django-peeringdb>=0.6.1,<1.0
+django-peeringdb>=0.7.0,<0.8
 ipaddress>=1.0.8,<2.0
 pysnmp>=4.3.5,<5.0
 djangorestframework>=3.6.3,<4.0
+napalm>=1.2.0,<2.0

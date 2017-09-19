@@ -23,3 +23,9 @@ SNMP = getattr(settings, 'PRNGMGR_SNMP', {
    'authPass': None,
    'privKey': None,
 })
+
+DEFAULT_DRIVER = getattr(settings, 'PRNGMGR_DEFAULT_DRIVER', None)
+
+NAPALM_USERNAME = getattr(settings, 'PRNGMGR_NAPALM_USERNAME', None)
+
+NAPALM_PASSWORD = getattr(settings, 'PRNGMGR_NAPALM_PASSWORD', None)
