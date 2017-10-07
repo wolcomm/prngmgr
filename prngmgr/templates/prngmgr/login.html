@@ -28,7 +28,7 @@
 {% block content %}
     <img src="{% static 'img/logo.jpg' %}" class="img-responsive center-block"/>
     <h2 class="form-login-heading text-center">Please Login to Peering Manager</h2>
-    <form class="form-login" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    <form class="form-login" method="post" action="{% url 'prngmgr-login' %}">
         {% csrf_token %}
         {% if form.errors %}
             <div class="alert alert-danger">
